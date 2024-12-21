@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ListView
+        android:id="@+id/list_usage_time"
+        android:layout_width="wrap_content"
+        android:layout_height="459dp"
+        android:layout_marginStart="123dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/day_usage" />
+
+    <ImageView
+        android:id="@+id/head_of_helper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="59dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/head_p" />
+
+    <ImageView
+        android:id="@+id/body_of_helper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/head_of_helper"
+        app:srcCompat="@drawable/body_p" />
+
+    <ImageView
+        android:id="@+id/left_eye"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
+        app:layout_constraintStart_toStartOf="@+id/head_of_helper"
+        app:layout_constraintTop_toTopOf="@+id/head_of_helper"
+        app:srcCompat="@drawable/eye_helpers" />
+
+    <ImageView
+        android:id="@+id/right_eye"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:rotation="-11.55"
+        app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
+        app:layout_constraintEnd_toEndOf="@+id/head_of_helper"
+        app:layout_constraintTop_toTopOf="@+id/head_of_helper"
+        app:srcCompat="@drawable/eye_helpers" />
+
+    <TextView
+        android:id="@+id/statistic"
+        style="@android:style/Theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/josefin_sans_semi_bold"
+        android:text="@string/statistic_for_days"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.136"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_text_view" />
+
+    <TextView
+        android:id="@+id/day_usage"
+        android:fontFamily="@font/josefin_sans_semi_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        style="@android:style/Theme"
+        android:layout_marginStart="51dp"
+        android:text="@string/statistic_in_the_day"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.143"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statistic" />
+
+    <TextView
+        android:id="@+id/dialog_text_view"
+        android:fontFamily="@font/instrument_serif_font"
+        android:layout_width="329dp"
+        android:paddingHorizontal="9dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:textSize="24sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.378"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/body_of_helper" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="15dp"
+        android:rotation="180"
+        app:layout_constraintEnd_toStartOf="@+id/day_usage"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/day_usage"
+        app:srcCompat="@drawable/traingle_toggle" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/statistic"
+        app:layout_constraintHorizontal_bias="0.838"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/statistic"
+        app:srcCompat="@drawable/toggle_shape" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:textSize="10dp"
+        android:textColor="@color/black"
+        android:text="@string/made_by"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

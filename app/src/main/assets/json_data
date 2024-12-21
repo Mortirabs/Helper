@@ -1,0 +1,43 @@
+{
+"applicationsCategory" : [
+"normal",
+"games",
+"socialNetwork",
+"messageNetwork",
+"developApplications",
+"artisticApplications",
+"oddApplications"
+],
+
+"welcomeCategory" : [
+"normalWelcomeDialog",
+"gameAddictedWelcomeDialog",
+"socialAddictedWelcomeDialog",
+"messageAddictedWelcomeDialog",
+"developerWelcomeDialog",
+"artisticManWelcomeDialog",
+"BizarreWelcomeDialog"
+],
+
+"normalWelcomeDialog" : "Hello, you total time in smartphone: ",
+
+"developerWelcomeDialog" : "HI MY CREATOR, YOU ARE SO WONDERFUL",
+
+"socialAddictedWelcomeDialog" : "Hi social addicted teenager, without life and personal life",
+
+"messageAddictedWelcomeDialog" : "Hi, congratulation you have someone in your life",
+
+"gameAddictedWelcomeDialog" : "HeLLO GaYmer, how was your nothing?",
+
+"artisticManWelcomeDialog" : "Hello cameramen",
+
+"BizarreWelcomeDialog" : "Man/Woman if you have some problems in your life, you can have someone for help.",
+
+
+"games":["Pubg Mobile","Mobile Legend"],
+"socialNetwork":["YouTube","WeChat"],
+"messageNetwork":["Whatsapp"],
+"developApplications":["Setting","Helper"],
+"artisticApplications":["Camera"],
+"oddApplications":["Chrome"]
+}
