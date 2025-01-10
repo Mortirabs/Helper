@@ -36,10 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private AnimatorSet mouth;
-    DialogAlgorithm algoDialog;
     public int numberOfStartedAnim;
-    public final String[] welcomeMassiveString = {"Didn't","you","have","some",
-            "troubles","with","finishing","me","properly?",};
     public TextView textView;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
@@ -53,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
         eyesLeft = findViewById(R.id.left_eye);
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
-
-
-
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
         if(getGrantStatus()) {
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
@@ -64,26 +58,17 @@ public class MainActivity extends AppCompatActivity {
             PackageManager packageManager = getApplicationContext().getPackageManager();
 
             for(UsageStats usageStats : appList) {
-                //String fullName = usageStats.getPackageName();
-                //String[] splitNames = fullName.split("\\.");
-                //String applicationName = splitNames[splitNames.length - 1].trim();
                 try {
                     usageApplication.put(usageStats.getTotalTimeInForeground(),(String)packageManager.getApplicationLabel(packageManager.getApplicationInfo(usageStats.getPackageName(),PackageManager.GET_META_DATA)));
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
-                //usageApplication.put((int)usageStats.getTotalTimeInForeground(),applicationName);
-//              appNames.add(new ListViewData((String)packageManager.getApplicationLabel(packageManager.getApplicationInfo(usageStats.getPackageName(),PackageManager.GET_META_DATA)), usageStats.getTotalTimeInForeground()));
-
             }
             for (Map.Entry<Long, String> item : usageApplication.entrySet()) {
                 appNames.add(new ListViewData(item.getValue(), item.getKey()));
             }
             ListViewAdapter adapter = new ListViewAdapter(this,appNames);
             ls.setAdapter(adapter);
-
-
-
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
@@ -98,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         ObjectAnimator gratingDown = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 0f);
         ObjectAnimator gratingDownWithLeftEye = ObjectAnimator.ofFloat(eyesLeft, "translationY", 0f);
         ObjectAnimator gratingDownWithRightEye = ObjectAnimator.ofFloat(eyesRight, "translationY", 0f);
-
         AnimatorSet grating = new AnimatorSet();
         grating.play(gratingUp).before(gratingDown);
         grating.play(gratingUp).with(gratingUpWithRightEye).with(gratingUpWithLeftEye);
@@ -111,37 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
         ObjectAnimator mouthClose = ObjectAnimator.ofFloat(bodyOfHelperS, "translationY", -3f);
         ObjectAnimator mouthOpen = ObjectAnimator.ofFloat(bodyOfHelperS,"translationY",2f);
-//        ObjectAnimator rotationHeadRight = ObjectAnimator.ofFloat(headOfHelperS,"rotation",-4);
-//        ObjectAnimator rotationHeadLeft = ObjectAnimator.ofFloat(headOfHelperS, "rotation", 4f);
-//        ObjectAnimator offRotation = ObjectAnimator.ofFloat(headOfHelperS, "rotation",0f);
-
-
-//        ObjectAnimator rotationHeadRight = ObjectAnimator.ofFloat(headOfHelperS, "rotation",3f, 0f);
-//        ObjectAnimator rotationHeadLeft = ObjectAnimator.ofFloat(headOfHelperS,"rotation", 0f,3f);
-//        ObjectAnimator rotationStartPoint = ObjectAnimator.ofFloat(headOfHelperS, "rotation", 0f,0f);
-//        ObjectAnimator closeMouth = ObjectAnimator.ofFloat(headOfHelperS, "translationY",0f);
-//
-//        ObjectAnimator closeMouthRightEye= ObjectAnimator.ofFloat(eyesRight, "translationY",0f);
-//        ObjectAnimator closeMouthLeftEye = ObjectAnimator.ofFloat(eyesLeft, "translationY",0f);
-//
-//        ObjectAnimator openMouth = ObjectAnimator.ofFloat(headOfHelperS, "translationY", -4f);
-//
-//        ObjectAnimator bodyShakeUp = ObjectAnimator.ofFloat(bodyOfHelperS, "translationY", -1f);
-//        ObjectAnimator bodyShakeDown = ObjectAnimator.ofFloat(bodyOfHelperS, "translationY", 0f);
-//
-//        ObjectAnimator openMouthRightEye = ObjectAnimator.ofFloat(eyesRight, "translationY", -5f);
-//        ObjectAnimator openMouthLeftEye = ObjectAnimator.ofFloat(eyesLeft, "translationY", -5f);
         mouth = new AnimatorSet();
         mouth.play(mouthOpen).before(mouthClose);
-//        mouth.play(rotationHeadLeft).after(rotationHeadRight);
-//        mouth.play(bodyShakeUp).with(rotationHeadLeft);
-//        mouth.play(bodyShakeDown).with(rotationHeadRight);
-//
-//        mouth.play(closeMouth).after(openMouth);
-//        mouth.play(openMouth).with(openMouthRightEye).with(openMouthLeftEye);
-//        mouth.play(closeMouth).with(closeMouthRightEye).with(closeMouthLeftEye);
-
-
         mouth.setDuration(300);
         mouth.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -154,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ++numberOfStartedAnim;
             }
-
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
@@ -168,10 +122,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean getGrantStatus() {
         AppOpsManager appOps = (AppOpsManager) getApplicationContext()
                 .getSystemService(Context.APP_OPS_SERVICE);
-
         int mode = appOps.checkOpNoThrow(OPSTR_GET_USAGE_STATS,
                 android.os.Process.myUid(), getApplicationContext().getPackageName());
-
         if (mode == AppOpsManager.MODE_DEFAULT) {
             return (getApplicationContext().checkCallingOrSelfPermission(android.Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED);
         } else {

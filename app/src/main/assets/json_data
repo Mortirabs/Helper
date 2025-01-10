@@ -1,6 +1,5 @@
 {
 "applicationsCategory" : [
-"normal",
 "games",
 "socialNetwork",
 "messageNetwork",
@@ -10,7 +9,6 @@
 ],
 
 "welcomeCategory" : [
-"normalWelcomeDialog",
 "gameAddictedWelcomeDialog",
 "socialAddictedWelcomeDialog",
 "messageAddictedWelcomeDialog",
@@ -19,7 +17,6 @@
 "BizarreWelcomeDialog"
 ],
 
-"normalWelcomeDialog" : "Hello, you total time in smartphone: ",
 
 "developerWelcomeDialog" : "HI MY CREATOR, YOU ARE SO WONDERFUL",
 

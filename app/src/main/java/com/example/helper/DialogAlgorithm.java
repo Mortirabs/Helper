@@ -9,20 +9,14 @@ import org.json.JSONObject;
 public class DialogAlgorithm {
 
     private Thread thread1;
-    private String wc;
     private final String jsonFile;
     private int categoryPlace;
     static int initializationTime;
-    private JSONObject jsonObject;
-    static int getClickedTime;
-    static String NickName;
 
     public DialogAlgorithm(String js) {
         initR();
         jsonFile = js;
         setNickname();
-
-
         Runnable runnable = this::setNickname;
         thread1 = new Thread(runnable);
         thread1.start();
@@ -36,14 +30,11 @@ public class DialogAlgorithm {
             if (MainActivity.usageApplication != null) {
                 String mostUsageApplication = MainActivity.usageApplication.firstEntry().toString();
                 String[] mostUsageApplicationS = mostUsageApplication.split("=");
-                Log.d("If states: ", mostUsageApplicationS[1]);
                 int cIn=0;
                 boolean found = false;
                 for(; cIn < o.getJSONArray("applicationsCategory").length() && !found;cIn++) {
-                    Log.d("ForState: ","Worked" + cIn);
                     JSONArray a = o.getJSONArray(o.getJSONArray("applicationsCategory").getString(cIn));
                     for (int i = 0; i < a.length(); i++) {
-                        Log.d("ForState2: ","Worked" + i);
                         if(mostUsageApplicationS[1].equals(a.getString(i))) {
                             found = true;
                             categoryPlace = cIn;
@@ -51,7 +42,7 @@ public class DialogAlgorithm {
                             break;}
                     }
             }
-        } else {Log.d("If states: ","States #1 worked)");}
+        }
         }catch (JSONException e) {
             e.printStackTrace();
         }
