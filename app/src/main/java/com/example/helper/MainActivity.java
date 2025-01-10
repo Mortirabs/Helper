@@ -4,6 +4,7 @@ import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         headOfHelperS = findViewById(R.id.head_of_helper);
         bodyOfHelperS = findViewById(R.id.body_of_helper);
         eyesRight = findViewById(R.id.right_eye);
