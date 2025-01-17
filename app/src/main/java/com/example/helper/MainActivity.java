@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private AnimatorSet mouth;
     public int numberOfStartedAnim;
-    private boolean sliderState = false;
+    private boolean sliderState = true;
     public TextView textView;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
-                ValueAnimator anim = ValueAnimator.ofInt(459,1);
+                ValueAnimator anim = ValueAnimator.ofInt(459,0);
                 ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
                 anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 triangleRotation.start();
                 sliderState = false;
             } else {
-                ValueAnimator anim = ValueAnimator.ofInt(1,459);
+                ValueAnimator anim = ValueAnimator.ofInt(0,459);
                 ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
 
                 anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
