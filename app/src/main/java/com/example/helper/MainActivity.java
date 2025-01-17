@@ -3,6 +3,7 @@ package com.example.helper;
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -10,6 +11,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -18,6 +20,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private AnimatorSet mouth;
     public int numberOfStartedAnim;
+    private boolean sliderState = false;
     public TextView textView;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
@@ -52,6 +56,39 @@ public class MainActivity extends AppCompatActivity {
         eyesLeft = findViewById(R.id.left_eye);
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
+        TextView dayTextView = findViewById(R.id.day_usage);
+        dayTextView.setOnClickListener(view -> {
+            if (sliderState) {
+                ValueAnimator anim = ValueAnimator.ofInt(459,1);
+                ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
+                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                        ViewGroup.LayoutParams params = ls.getLayoutParams();
+                        params.height = (int)valueAnimator.getAnimatedValue();
+                        ls.setLayoutParams(params);
+                    }
+                });
+                anim.start();
+                triangleRotation.start();
+                sliderState = false;
+            } else {
+                ValueAnimator anim = ValueAnimator.ofInt(1,459);
+                ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
+
+                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                        ViewGroup.LayoutParams params = ls.getLayoutParams();
+                        params.height = (int)valueAnimator.getAnimatedValue();
+                        ls.setLayoutParams(params);
+                    }
+                });
+                triangleRotation.start();
+                anim.start();
+                sliderState = true;
+            }
+        });
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
         if(getGrantStatus()) {
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);

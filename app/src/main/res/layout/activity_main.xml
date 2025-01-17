@@ -103,7 +103,7 @@
         app:layout_constraintTop_toBottomOf="@+id/body_of_helper" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/triangle_static_day"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_marginTop="13dp"
