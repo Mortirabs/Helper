@@ -13,5 +13,11 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="android:textColor">@color/body_color</item>
+        <item name="body">@drawable/body_l</item>
+        <item name="head">@drawable/head_l</item>
+        <item name="eyes">@drawable/eye_l</item>
+        <item name="triangle">@drawable/triangle_toggle_l</item>
+        <item name="toggle">@drawable/toggle_shape_l</item>
+        <item name="menus">@drawable/menu</item>
     </style>
 </resources>

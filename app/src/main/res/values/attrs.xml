@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="body" format="reference"/>
+    <attr name="head" format="reference"/>
+    <attr name="eyes" format="reference"/>
+    <attr name="toggle" format="reference"/>
+    <attr name="triangle" format="reference"/>
+    <attr name="menus" format="reference"/>
+</resources>

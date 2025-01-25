@@ -17,10 +17,15 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -49,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         headOfHelperS = findViewById(R.id.head_of_helper);
         bodyOfHelperS = findViewById(R.id.body_of_helper);
         eyesRight = findViewById(R.id.right_eye);
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
-                ValueAnimator anim = ValueAnimator.ofInt(459,0);
+                ValueAnimator anim = ValueAnimator.ofInt(459,1);
                 ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
                 anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -73,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
                 triangleRotation.start();
                 sliderState = false;
             } else {
-                ValueAnimator anim = ValueAnimator.ofInt(0,459);
-                ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
+                ValueAnimator anims = ValueAnimator.ofInt(1,459);
+                ObjectAnimator triangleRotations = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
 
-                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                anims.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
                         ViewGroup.LayoutParams params = ls.getLayoutParams();
@@ -84,15 +89,15 @@ public class MainActivity extends AppCompatActivity {
                         ls.setLayoutParams(params);
                     }
                 });
-                triangleRotation.start();
-                anim.start();
+                triangleRotations.start();
+                anims.start();
                 sliderState = true;
             }
         });
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
         if(getGrantStatus()) {
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST,  System.currentTimeMillis() - 1000*3600*12,  System.currentTimeMillis());
+            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST,System.currentTimeMillis() - 3600000*24,System.currentTimeMillis() );
             appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 0).collect(Collectors.toList());
             PackageManager packageManager = getApplicationContext().getPackageManager();
 
@@ -129,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
         grating.start();
     }
     private void normalStateHelperAnim() {
+
     }
     private void speech(String[] speechText) {
-
-        ObjectAnimator mouthClose = ObjectAnimator.ofFloat(bodyOfHelperS, "translationY", -3f);
-        ObjectAnimator mouthOpen = ObjectAnimator.ofFloat(bodyOfHelperS,"translationY",2f);
+        ObjectAnimator headUp = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 5f);
+        ObjectAnimator bodyUp = ObjectAnimator.ofFloat(bodyOfHelperS,"translationY",2f);
         mouth = new AnimatorSet();
-        mouth.play(mouthOpen).before(mouthClose);
+        mouth.play(headUp).with(bodyUp);
         mouth.setDuration(300);
         mouth.addListener(new AnimatorListenerAdapter() {
             @Override

@@ -4,8 +4,6 @@
     android:shape="oval">
     <size android:width="5dp"
         android:height="5dp"/>
-    <gradient
-        android:startColor="@color/toggle_color"
-        android:centerColor="@color/toggle_color"
-        android:endColor="@color/toggle_color"/>
+    <solid
+        android:color="@color/white"/>
 </shape>

@@ -6,7 +6,7 @@
         android:height="62dp"
         android:width="196dp"/>
     <gradient
-        android:startColor="@color/body_color"
-        android:endColor="@color/body_color"
-        android:centerColor="@color/body_color"/>
+        android:startColor="@color/white"
+        android:endColor="@color/white"
+        android:centerColor="@color/white"/>
 </shape>

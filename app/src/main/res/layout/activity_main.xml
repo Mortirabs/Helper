@@ -24,7 +24,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/head_p" />
+        app:srcCompat="?attr/head"/>
 
     <ImageView
         android:id="@+id/body_of_helper"
@@ -35,7 +35,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/head_of_helper"
-        app:srcCompat="@drawable/body_p" />
+        app:srcCompat="?attr/body" />
 
     <ImageView
         android:id="@+id/left_eye"
@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
         app:layout_constraintStart_toStartOf="@+id/head_of_helper"
         app:layout_constraintTop_toTopOf="@+id/head_of_helper"
-        app:srcCompat="@drawable/eye_helpers" />
+        app:srcCompat="?attr/eyes"/>
 
     <ImageView
         android:id="@+id/right_eye"
@@ -56,7 +56,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
         app:layout_constraintEnd_toEndOf="@+id/head_of_helper"
         app:layout_constraintTop_toTopOf="@+id/head_of_helper"
-        app:srcCompat="@drawable/eye_helpers" />
+        app:srcCompat="?attr/eyes" />
 
     <TextView
         android:id="@+id/statistic"
@@ -113,7 +113,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/day_usage"
-        app:srcCompat="@drawable/traingle_toggle" />
+        app:srcCompat="?attr/triangle" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -125,7 +125,7 @@
         app:layout_constraintHorizontal_bias="0.838"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/statistic"
-        app:srcCompat="@drawable/toggle_shape" />
+        app:srcCompat="?attr/toggle" />
 
     <TextView
         android:id="@+id/textView"
@@ -137,4 +137,18 @@
         android:text="@string/made_by"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/menu_button"
+        android:layout_width="48dp"
+        android:contentDescription="@string/app_name"
+        android:layout_height="48dp"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/background_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="?attr/menus" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
