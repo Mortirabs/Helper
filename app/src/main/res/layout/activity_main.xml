@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/consta"
     tools:context=".MainActivity">
 
     <ListView
         android:id="@+id/list_usage_time"
         android:layout_width="wrap_content"
-        android:layout_height="459dp"
+        android:layout_height="390dp"
         android:layout_marginStart="123dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +25,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/head"/>
+        app:srcCompat="@drawable/head"/>
 
     <ImageView
         android:id="@+id/body_of_helper"
@@ -35,7 +36,7 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/head_of_helper"
-        app:srcCompat="?attr/body" />
+        app:srcCompat="@drawable/body" />
 
     <ImageView
         android:id="@+id/left_eye"
@@ -45,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
         app:layout_constraintStart_toStartOf="@+id/head_of_helper"
         app:layout_constraintTop_toTopOf="@+id/head_of_helper"
-        app:srcCompat="?attr/eyes"/>
+        app:srcCompat="@drawable/eye"/>
 
     <ImageView
         android:id="@+id/right_eye"
@@ -56,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/head_of_helper"
         app:layout_constraintEnd_toEndOf="@+id/head_of_helper"
         app:layout_constraintTop_toTopOf="@+id/head_of_helper"
-        app:srcCompat="?attr/eyes" />
+        app:srcCompat="@drawable/eye" />
 
     <TextView
         android:id="@+id/statistic"
@@ -113,7 +114,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/day_usage"
-        app:srcCompat="?attr/triangle" />
+        app:srcCompat="@drawable/triangle_toggle" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -125,15 +126,15 @@
         app:layout_constraintHorizontal_bias="0.838"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/statistic"
-        app:srcCompat="?attr/toggle" />
+        app:srcCompat="@drawable/toggle_shape" />
 
     <TextView
         android:id="@+id/textView"
+        style="@android:style/Theme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:textSize="10dp"
-        android:textColor="@color/black"
         android:text="@string/made_by"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -144,11 +145,24 @@
         android:contentDescription="@string/app_name"
         android:layout_height="48dp"
         android:layout_marginBottom="24dp"
-        android:background="@android:color/background_light"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="?attr/menus" />
+        app:srcCompat="@drawable/menu" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/menu_fragment_view"
+        android:name="com.example.helper.MenuFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/menu_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout="@layout/fragment_menu"
+        android:visibility="invisible"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,8 @@ import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentContainerView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -13,6 +15,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.AppOpsManager;
+import android.app.UiModeManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -23,9 +26,13 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,23 +55,28 @@ public class MainActivity extends AppCompatActivity {
     public int numberOfStartedAnim;
     private boolean sliderState = true;
     public TextView textView;
+    public static boolean menuState = false;
+    public ImageButton menuButton;
+    public FragmentContainerView menuContainerView;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         headOfHelperS = findViewById(R.id.head_of_helper);
         bodyOfHelperS = findViewById(R.id.body_of_helper);
         eyesRight = findViewById(R.id.right_eye);
         eyesLeft = findViewById(R.id.left_eye);
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
+        menuButton = findViewById(R.id.menu_button);
+        menuContainerView = findViewById(R.id.menu_fragment_view);
         TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
-                ValueAnimator anim = ValueAnimator.ofInt(459,1);
+                ValueAnimator anim = ValueAnimator.ofInt(780,1);
                 ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
                 anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -78,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 triangleRotation.start();
                 sliderState = false;
             } else {
-                ValueAnimator anims = ValueAnimator.ofInt(1,459);
+                ValueAnimator anims = ValueAnimator.ofInt(1,780);
                 ObjectAnimator triangleRotations = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
 
                 anims.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -92,6 +104,12 @@ public class MainActivity extends AppCompatActivity {
                 triangleRotations.start();
                 anims.start();
                 sliderState = true;
+            }
+        });
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menuFun();
             }
         });
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
@@ -135,6 +153,15 @@ public class MainActivity extends AppCompatActivity {
     }
     private void normalStateHelperAnim() {
 
+    }
+    public void menuFun() {
+        if(menuState) {
+            menuContainerView.setVisibility(View.INVISIBLE);
+            menuState = false;
+        } else {
+            menuContainerView.setVisibility(View.VISIBLE);
+            menuState = true;
+        }
     }
     private void speech(String[] speechText) {
         ObjectAnimator headUp = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 5f);

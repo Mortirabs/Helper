@@ -2,10 +2,8 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <gradient
-        android:centerColor="@color/white"
-        android:endColor="@color/white"
-        android:startColor="@color/white"/>
+    <solid
+        android:color="?attr/eyes"/>
     <size
         android:height="22dp"
         android:width="8dp"/>

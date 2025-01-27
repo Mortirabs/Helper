@@ -14,7 +14,7 @@
         android:adjustViewBounds="true"
         android:layout_gravity="center_vertical"
         android:layout_weight="25"
-        app:srcCompat="@drawable/toggle_shape_l" />
+        app:srcCompat="@drawable/toggle_shape" />
 
     <TextView
         android:id="@+id/text_list"

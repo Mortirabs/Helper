@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 public class DialogAlgorithm {
 
-    private Thread thread1;
     private final String jsonFile;
     private int categoryPlace;
     static int initializationTime;
@@ -17,9 +16,6 @@ public class DialogAlgorithm {
         initR();
         jsonFile = js;
         setNickname();
-        Runnable runnable = this::setNickname;
-        thread1 = new Thread(runnable);
-        thread1.start();
     }
     private static void initR() {
         ++initializationTime;
