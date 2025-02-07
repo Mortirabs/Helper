@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentContainerView;
 
 import android.animation.Animator;
@@ -14,6 +15,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.app.UiModeManager;
 import android.app.usage.UsageStats;
@@ -23,10 +25,15 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -35,6 +42,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -42,6 +50,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -55,9 +64,7 @@ public class MainActivity extends AppCompatActivity {
     public int numberOfStartedAnim;
     private boolean sliderState = true;
     public TextView textView;
-    public static boolean menuState = false;
     public ImageButton menuButton;
-    public FragmentContainerView menuContainerView;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
 
@@ -72,11 +79,18 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
-        menuContainerView = findViewById(R.id.menu_fragment_view);
+
+        Locale sss = new Locale("Russian");
+        Configuration conf = getResources().getConfiguration();
+
+        conf.setLocale(sss);
+
+        getApplicationContext().getResources().updateConfiguration(conf,getResources().getDisplayMetrics());
+
         TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
-                ValueAnimator anim = ValueAnimator.ofInt(780,1);
+                ValueAnimator anim = ValueAnimator.ofInt(ls.getLayoutParams().height,1);
                 ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
                 anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
@@ -155,13 +169,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void menuFun() {
-        if(menuState) {
-            menuContainerView.setVisibility(View.INVISIBLE);
-            menuState = false;
-        } else {
-            menuContainerView.setVisibility(View.VISIBLE);
-            menuState = true;
-        }
+        DialogFragment m = new MenuFragment();
+        m.show(getSupportFragmentManager(), "Dialog");
+
     }
     private void speech(String[] speechText) {
         ObjectAnimator headUp = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 5f);

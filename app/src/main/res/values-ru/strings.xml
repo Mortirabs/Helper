@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Помощник</string>
+    <string name="statistic_for_days">Статистика с днями</string>
+    <string name="statistic_in_the_day">Статистика за день</string>
+    <string name="made_by">Сделал Чиня</string>
+    <string name="dark_theme_string">Темная тема:</string>
+    <string name="creator_string">Создатель</string>
+</resources>

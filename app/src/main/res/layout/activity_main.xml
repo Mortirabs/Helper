@@ -8,6 +8,7 @@
     tools:context=".MainActivity">
 
     <ListView
+        android:divider="@null"
         android:id="@+id/list_usage_time"
         android:layout_width="wrap_content"
         android:layout_height="390dp"
@@ -152,17 +153,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/menu" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/menu_fragment_view"
-        android:name="com.example.helper.MenuFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/menu_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/fragment_menu"
-        android:visibility="invisible"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
