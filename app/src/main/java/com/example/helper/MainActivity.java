@@ -80,12 +80,7 @@ public class MainActivity extends AppCompatActivity {
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
 
-        Locale sss = new Locale("Russian");
-        Configuration conf = getResources().getConfiguration();
 
-        conf.setLocale(sss);
-
-        getApplicationContext().getResources().updateConfiguration(conf,getResources().getDisplayMetrics());
 
         TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {

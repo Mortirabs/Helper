@@ -41,11 +41,10 @@ public class MenuFragment extends DialogFragment {
         super.onResume();
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         WindowManager.LayoutParams p = window.getAttributes();
-        p.y = 230;
+        p.y = Gravity.CENTER + 224;
         window.setAttributes(p);
         window.setDimAmount(0);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setGravity(Gravity.CENTER);
         window.setLayout(460,460);
     }
 
