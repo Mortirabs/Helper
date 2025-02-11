@@ -48,6 +48,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -123,9 +124,14 @@ public class MainActivity extends AppCompatActivity {
         });
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
         if(getGrantStatus()) {
+            Calendar cal = Calendar.getInstance();
+//            cal.set(Calendar.HOUR_OF_DAY, 0);
+//            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.HOUR_OF_DAY,10);
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST,System.currentTimeMillis() - 3600000*24,System.currentTimeMillis() );
-            appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 0).collect(Collectors.toList());
+            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
+            appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
+
             PackageManager packageManager = getApplicationContext().getPackageManager();
 
             for(UsageStats usageStats : appList) {

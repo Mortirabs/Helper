@@ -41,11 +41,11 @@ public class MenuFragment extends DialogFragment {
         super.onResume();
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         WindowManager.LayoutParams p = window.getAttributes();
-        p.y = Gravity.CENTER + 224;
+        p.y = 500;
         window.setAttributes(p);
         window.setDimAmount(0);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setLayout(460,460);
+        window.setLayout(WindowManager.LayoutParams.WRAP_CONTENT, 600);
     }
 
     @Override
@@ -69,9 +69,9 @@ public class MenuFragment extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (adapterView.getItemAtPosition(i).equals("Rus")) {
-                    Toast.makeText(getActivity(), "Selected RUS",Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getActivity(), "Selected RUS",Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getActivity(),"Selected ENG",Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getActivity(),"Selected ENG",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -82,12 +82,12 @@ public class MenuFragment extends DialogFragment {
         });
         languageSpinner.setAdapter(adapter);
         int nightModeFlags =
-                getContext().getResources().getConfiguration().uiMode &
+                requireContext().getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;
-
         switch (nightModeFlags) {
             case Configuration.UI_MODE_NIGHT_YES:
                 themeSwitch.setChecked(true);
+                Toast.makeText(getActivity(),"night mode is on",Toast.LENGTH_SHORT).show();
             case Configuration.UI_MODE_NIGHT_NO:
                 themeSwitch.setChecked(false);
         }
