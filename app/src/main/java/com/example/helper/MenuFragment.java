@@ -3,6 +3,7 @@ package com.example.helper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -57,6 +59,7 @@ public class MenuFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SwitchCompat themeSwitch = view.findViewById(R.id.theme_switch);
         Spinner languageSpinner = view.findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -84,20 +87,20 @@ public class MenuFragment extends DialogFragment {
         int nightModeFlags =
                 requireContext().getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;
-        switch (nightModeFlags) {
-            case Configuration.UI_MODE_NIGHT_YES:
-                themeSwitch.setChecked(true);
-                Toast.makeText(getActivity(),"night mode is on",Toast.LENGTH_SHORT).show();
-            case Configuration.UI_MODE_NIGHT_NO:
-                themeSwitch.setChecked(false);
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            themeSwitch.setChecked(true);
         }
         themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (!b) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    sharedPreferences.edit().putBoolean("IS_SYSTEM", false).apply();
+                    sharedPreferences.edit().putBoolean("IS_NIGHT",false).apply();
                 } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    sharedPreferences.edit().putBoolean("IS_SYSTEM",false).apply();
+                    sharedPreferences.edit().putBoolean("IS_NIGHT",true).apply();
                 }
             }
         });

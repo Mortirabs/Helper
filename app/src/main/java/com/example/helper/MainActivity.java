@@ -22,12 +22,14 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -44,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +83,14 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
-
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences.getBoolean("IS_SYSTEM",true)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if(sharedPreferences.getBoolean("IS_NIGHT", false)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
 
         TextView dayTextView = findViewById(R.id.day_usage);
@@ -125,11 +135,12 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
         if(getGrantStatus()) {
             Calendar cal = Calendar.getInstance();
-//            cal.set(Calendar.HOUR_OF_DAY, 0);
-//            cal.set(Calendar.MILLISECOND, 0);
-            cal.set(Calendar.HOUR_OF_DAY,10);
+            cal.set(Calendar.HOUR, 0);
+            cal.set(Calendar.MILLISECOND,0);
+            cal.set(Calendar.MINUTE,0);
+            Log.d("HOURS: ",cal.getTime().toString());
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
+            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST,cal.getTimeInMillis(),System.currentTimeMillis() );
             appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
 
             PackageManager packageManager = getApplicationContext().getPackageManager();
@@ -150,56 +161,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
         DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader());
-        speech(dialogAlgorithm.getWelcomeDialogText());
-    }
-    private void helperSWelcomeAnimation(){
-        ObjectAnimator gratingUp = ObjectAnimator.ofFloat(headOfHelperS, "translationY", -20f);
-        gratingUp.setDuration(500);
-        ObjectAnimator gratingUpWithRightEye = ObjectAnimator.ofFloat(eyesRight, "translationY",-20f);
-        ObjectAnimator gratingUpWithLeftEye = ObjectAnimator.ofFloat(eyesLeft, "translationY",-20f);
-        ObjectAnimator gratingDown = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 0f);
-        ObjectAnimator gratingDownWithLeftEye = ObjectAnimator.ofFloat(eyesLeft, "translationY", 0f);
-        ObjectAnimator gratingDownWithRightEye = ObjectAnimator.ofFloat(eyesRight, "translationY", 0f);
-        AnimatorSet grating = new AnimatorSet();
-        grating.play(gratingUp).before(gratingDown);
-        grating.play(gratingUp).with(gratingUpWithRightEye).with(gratingUpWithLeftEye);
-        grating.play(gratingDown).after(3000).after(gratingUp).with(gratingDownWithLeftEye).with(gratingDownWithRightEye);
-        grating.start();
-    }
-    private void normalStateHelperAnim() {
-
+        HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
+                textView);
+        hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
     }
     public void menuFun() {
         DialogFragment m = new MenuFragment();
         m.show(getSupportFragmentManager(), "Dialog");
 
-    }
-    private void speech(String[] speechText) {
-        ObjectAnimator headUp = ObjectAnimator.ofFloat(headOfHelperS, "translationY", 5f);
-        ObjectAnimator bodyUp = ObjectAnimator.ofFloat(bodyOfHelperS,"translationY",2f);
-        mouth = new AnimatorSet();
-        mouth.play(headUp).with(bodyUp);
-        mouth.setDuration(300);
-        mouth.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                if (textView.getText() != null) {
-                    textView.setText(textView.getText() + " " + speechText[numberOfStartedAnim]);
-                } else {
-                    textView.setText(speechText[numberOfStartedAnim]);
-                }
-                ++numberOfStartedAnim;
-            }
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                if(numberOfStartedAnim < speechText.length) {
-                    mouth.start();
-                }
-            }
-        });
-        mouth.start();
     }
     private boolean getGrantStatus() {
         AppOpsManager appOps = (AppOpsManager) getApplicationContext()
