@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,10 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,9 +34,11 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class MenuFragment extends DialogFragment {
+    private String appLocales;
 
     public MenuFragment() {
     }
@@ -62,6 +67,7 @@ public class MenuFragment extends DialogFragment {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SwitchCompat themeSwitch = view.findViewById(R.id.theme_switch);
         Spinner languageSpinner = view.findViewById(R.id.spinner);
+        appLocales = getResources().getConfiguration().getLocales().get(0).getLanguage();
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 view.getContext(),
                 R.array.menu_languages,
@@ -71,10 +77,13 @@ public class MenuFragment extends DialogFragment {
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (adapterView.getItemAtPosition(i).equals("Rus")) {
-                   // Toast.makeText(getActivity(), "Selected RUS",Toast.LENGTH_SHORT).show();
+                LocaleListCompat localList;
+                if (i == 0) {
+                    localList = LocaleListCompat.forLanguageTags("en");
+                    AppCompatDelegate.setApplicationLocales(localList);
                 } else {
-                 //   Toast.makeText(getActivity(),"Selected ENG",Toast.LENGTH_SHORT).show();
+                    localList = LocaleListCompat.forLanguageTags("ru");
+                    AppCompatDelegate.setApplicationLocales(localList);
                 }
             }
 
@@ -83,7 +92,13 @@ public class MenuFragment extends DialogFragment {
                 Toast.makeText(view.getContext(), "Nothing was selected",Toast.LENGTH_SHORT).show();
             }
         });
+
         languageSpinner.setAdapter(adapter);
+        if (appLocales.equals("ru")) {
+            languageSpinner.setSelection(1);
+        } else {
+            languageSpinner.setSelection(0);
+        }
         int nightModeFlags =
                 requireContext().getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;

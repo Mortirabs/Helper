@@ -3,6 +3,7 @@
     <string name="statistic_for_days">Statistics with days</string>
     <string name="statistic_in_the_day">Statistics in the day</string>
     <string name="made_by">Made by Shyga</string>
+    <string name="language">Language</string>
     <string name="dark_theme_string">Dark mode:  </string>
     <string name="creator_string">Creator</string>
 </resources>

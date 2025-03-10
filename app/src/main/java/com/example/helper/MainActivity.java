@@ -6,47 +6,33 @@ import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentContainerView;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import androidx.core.os.LocaleListCompat;
+import androidx.fragment.app.DialogFragment;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.AlertDialog;
+
+import android.app.Activity;
 import android.app.AppOpsManager;
-import android.app.UiModeManager;
+import android.app.Dialog;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private AnimatorSet mouth;
     public int numberOfStartedAnim;
     private boolean sliderState = true;
+    public DialogAlgorithm dil;
     public TextView textView;
     public ImageButton menuButton;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
@@ -83,7 +70,13 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
+        TextView dayTextView = findViewById(R.id.day_usage);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Locale current = getResources().getConfiguration().getLocales().get(0);
+        Log.d("LOCALES:", current.getLanguage());
+
+
         if(sharedPreferences.getBoolean("IS_SYSTEM",true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         } else if(sharedPreferences.getBoolean("IS_NIGHT", false)) {
@@ -93,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        TextView dayTextView = findViewById(R.id.day_usage);
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
                 ValueAnimator anim = ValueAnimator.ofInt(ls.getLayoutParams().height,1);
@@ -132,10 +124,12 @@ public class MainActivity extends AppCompatActivity {
                 menuFun();
             }
         });
+
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
+
         if(getGrantStatus()) {
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MILLISECOND,0);
             cal.set(Calendar.MINUTE,0);
             Log.d("HOURS: ",cal.getTime().toString());
@@ -160,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
-        DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader());
+        DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader(), current);
         HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
                 textView);
         hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());

@@ -7,7 +7,6 @@
 "artisticApplications",
 "oddApplications"
 ],
-
 "welcomeCategory" : [
 "gameAddictedWelcomeDialog",
 "socialAddictedWelcomeDialog",
@@ -16,20 +15,32 @@
 "artisticManWelcomeDialog",
 "BizarreWelcomeDialog"
 ],
-
+"welcomeCategoryRus" : [
+"gameAddictedWelcomeDialogRus",
+"socialAddictedWelcomeDialogRus",
+"messageAddictedWelcomeDialogRus",
+"developerWelcomeDialogRus",
+"artisticManWelcomeDialogRus",
+"BizarreWelcomeDialogRus"
+],
 
 "developerWelcomeDialog" : "HI MY CREATOR, YOU ARE SO WONDERFUL",
+"developerWelcomeDialogRus":"ПРИВЕТ МОЙ СОЗДАТЕЛЬ, ТЫ ТАКОЙ КРУТОЙ",
 
 "socialAddictedWelcomeDialog" : "Hi social addicted teenager, without life and personal life",
+"socialAddictedWelcomeDialogRus" : "Привет ",
 
 "messageAddictedWelcomeDialog" : "Hi, congratulation you have someone in your life",
+"messageAddictedWelcomeDialogRus":"Привет, поздравляю тебя, у тебя есть близкий человек в твоей жизни",
 
 "gameAddictedWelcomeDialog" : "HeLLO GaYmer, how was your nothing?",
+"gameAddictedWelcomeDialogRus" : "Привет ГейМер, как твое ничего? ",
 
 "artisticManWelcomeDialog" : "Hello cameramen",
+"artisticManWelcomeDialogRus" : "Привет",
 
 "BizarreWelcomeDialog" : "Man/Woman if you have some problems in your life, you can have someone for help.",
-
+"BizarreWelcomeDialogRus" : "Мужчина или женщина, если у тебя есть проблемы в жизни, ты ",
 
 "games":["Pubg Mobile","Mobile Legend"],
 "socialNetwork":["YouTube","WeChat"],

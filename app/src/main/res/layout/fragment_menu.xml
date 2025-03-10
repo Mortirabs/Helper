@@ -39,7 +39,7 @@
                 android:layout_marginEnd="14dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Language" />
+                android:text="@string/language" />
 
             <Spinner
                 android:id="@+id/spinner"

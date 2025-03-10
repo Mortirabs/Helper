@@ -5,17 +5,14 @@ plugins {
 android {
     namespace 'com.example.helper'
     compileSdk 34
-
     defaultConfig {
         applicationId "com.example.helper"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -27,6 +24,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
