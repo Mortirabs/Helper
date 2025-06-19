@@ -33,6 +33,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,12 +130,13 @@ public class MainActivity extends AppCompatActivity {
 
         if(getGrantStatus()) {
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.HOUR_OF_DAY, -12);
             cal.set(Calendar.MILLISECOND,0);
             cal.set(Calendar.MINUTE,0);
             Log.d("HOURS: ",cal.getTime().toString());
+            Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_BEST,cal.getTimeInMillis(),System.currentTimeMillis() );
+            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
             appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
 
             PackageManager packageManager = getApplicationContext().getPackageManager();
@@ -162,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
     public void menuFun() {
         DialogFragment m = new MenuFragment();
         m.show(getSupportFragmentManager(), "Dialog");
-
     }
     private boolean getGrantStatus() {
         AppOpsManager appOps = (AppOpsManager) getApplicationContext()

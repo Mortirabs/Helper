@@ -43,9 +43,9 @@
 "BizarreWelcomeDialogRus" : "Мужчина или женщина, если у тебя есть проблемы в жизни, ты ",
 
 "games":["Pubg Mobile","Mobile Legend"],
-"socialNetwork":["YouTube","WeChat"],
+"socialNetwork":["YouTube","WeChat","TikTok"],
 "messageNetwork":["Whatsapp"],
-"developApplications":["Setting","Helper"],
+"developApplications":["Settings","Helper"],
 "artisticApplications":["Camera"],
 "oddApplications":["Chrome"]
 }
