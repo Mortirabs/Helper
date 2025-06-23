@@ -130,9 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(getGrantStatus()) {
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, -12);
-            cal.set(Calendar.MILLISECOND,0);
-            cal.set(Calendar.MINUTE,0);
+            cal.add(Calendar.HOUR_OF_DAY, -11);
             Log.d("HOURS: ",cal.getTime().toString());
             Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
