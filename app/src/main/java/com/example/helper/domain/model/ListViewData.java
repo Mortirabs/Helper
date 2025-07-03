@@ -1,4 +1,4 @@
-package com.example.helper;
+package com.example.helper.domain.model;
 
 public class ListViewData {
     private final long usageTimeInMilliseconds;

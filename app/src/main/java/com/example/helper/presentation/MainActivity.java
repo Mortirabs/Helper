@@ -1,4 +1,4 @@
-package com.example.helper;
+package com.example.helper.presentation;
 
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
@@ -7,22 +7,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.DialogFragment;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
-import android.app.Activity;
 import android.app.AppOpsManager;
-import android.app.Dialog;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -34,6 +30,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.helper.HelperAnimation;
+import com.example.helper.ListViewAdapter;
+import com.example.helper.R;
+import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.domain.model.ListViewData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,9 +131,13 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
 
         if(getGrantStatus()) {
+
+
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.HOUR_OF_DAY, -11);
             Log.d("HOURS: ",cal.getTime().toString());
+
+
             Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
             List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );

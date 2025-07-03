@@ -1,6 +1,8 @@
-package com.example.helper;
+package com.example.helper.domain;
 
 import android.util.Log;
+
+import com.example.helper.presentation.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
