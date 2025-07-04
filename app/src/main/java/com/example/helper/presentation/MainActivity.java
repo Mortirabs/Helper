@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
         if(getGrantStatus()) {
 
-
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.HOUR_OF_DAY, -11);
             Log.d("HOURS: ",cal.getTime().toString());

@@ -2,6 +2,7 @@ package com.example.helper.domain;
 
 import android.util.Log;
 
+import com.example.helper.domain.repository.JSONRepository;
 import com.example.helper.presentation.MainActivity;
 
 import org.json.JSONArray;
@@ -10,6 +11,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class DialogAlgorithm {
 
@@ -17,12 +19,14 @@ public class DialogAlgorithm {
     private int categoryPlace;
     private Locale languageTheme;
     static int initializationTime;
+    StatisticCalculatorClass StatisticCalculator;
 
-    public DialogAlgorithm(String js, Locale LocaleTheme) {
+    public DialogAlgorithm(String js, Locale LocaleTheme, JSONRepository JSONRep, TreeMap<Long,String> USGApp) {
         initR();
-        jsonFile = js;
+        jsonFile = JSONRep.getJsonString();
         languageTheme = LocaleTheme;
         setNickname();
+        StatisticCalculator = new StatisticCalculatorClass(USGApp);
     }
     private static void initR() {
         ++initializationTime;
@@ -31,7 +35,7 @@ public class DialogAlgorithm {
         try {
             JSONObject o = new JSONObject(jsonFile);
             if (MainActivity.usageApplication != null) {
-                String mostUsageApplication = Objects.requireNonNull(MainActivity.usageApplication.firstEntry()).toString();
+                String mostUsageApplication = StatisticCalculator.mostUsageApplication();
                 String[] mostUsageApplicationS = mostUsageApplication.split("=");
                 int cIn=0;
                 boolean found = false;
