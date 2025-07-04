@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class GetDayUsageStatsUseCase {
     private UsageStatsManager usm;
     private PackageManager pgc;
-    GetDayUsageStatsUseCase(UsageStatsManager usm, PackageManager pgc) {
+    public GetDayUsageStatsUseCase(UsageStatsManager usm, PackageManager pgc) {
         this.pgc = pgc;
         this.usm = usm;
     }

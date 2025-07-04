@@ -4,6 +4,7 @@ import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -19,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -34,7 +36,9 @@ import android.widget.Toast;
 import com.example.helper.HelperAnimation;
 import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
+import com.example.helper.data.JSONRepositoryImpl;
 import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.domain.GetDayUsageStatsUseCase;
 import com.example.helper.domain.model.ListViewData;
 
 import java.io.IOException;
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,25 +137,28 @@ public class MainActivity extends AppCompatActivity {
 
         if(getGrantStatus()) {
 
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.HOUR_OF_DAY, -11);
-            Log.d("HOURS: ",cal.getTime().toString());
+//            Calendar cal = Calendar.getInstance();
+//            cal.add(Calendar.HOUR_OF_DAY, -11);
+//            Log.d("HOURS: ",cal.getTime().toString());
+//            Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
 
 
-            Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
-            appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
-
             PackageManager packageManager = getApplicationContext().getPackageManager();
+            GetDayUsageStatsUseCase UsageStatsCase = new GetDayUsageStatsUseCase(usm,packageManager);
 
-            for(UsageStats usageStats : appList) {
+//            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
+//            appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
+
+            for(UsageStats usageStats : UsageStatsCase.execute()) {
                 try {
                     usageApplication.put(usageStats.getTotalTimeInForeground(),(String)packageManager.getApplicationLabel(packageManager.getApplicationInfo(usageStats.getPackageName(),PackageManager.GET_META_DATA)));
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
             }
+            DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(current,
+                    new JSONRepositoryImpl(getApplicationContext()),usageApplication);
             for (Map.Entry<Long, String> item : usageApplication.entrySet()) {
                 appNames.add(new ListViewData(item.getValue(), item.getKey()));
             }
@@ -159,10 +167,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
-        DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader(), current);
-        HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
-                textView);
-        hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
+//        DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader(), current);
+//        HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
+//                textView);
+//        hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
     }
     public void menuFun() {
         DialogFragment m = new MenuFragment();
@@ -179,19 +187,19 @@ public class MainActivity extends AppCompatActivity {
             return (mode == MODE_ALLOWED);
         }
     }
-    private String jsonLoader() {
-        String json = null;
-        try {
-            InputStream is = getAssets().open("json_data");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-            return json;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+//    private String jsonLoader() {
+//        String json = null;
+//        try {
+//            InputStream is = getAssets().open("json_data");
+//            int size = is.available();
+//            byte[] buffer = new byte[size];
+//            is.read(buffer);
+//            is.close();
+//            json = new String(buffer, "UTF-8");
+//            return json;
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//            return null;
+//        }
+//    }
 }

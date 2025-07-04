@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 public class StatisticCalculatorClass {
-    private TreeMap<Long, String> usageApps = new TreeMap<Long,String>();
+    private TreeMap<Long, String> usageApps;
     public StatisticCalculatorClass(TreeMap<Long,String> usageApps) {
         this.usageApps = usageApps;
     }

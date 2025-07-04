@@ -21,7 +21,7 @@ public class DialogAlgorithm {
     static int initializationTime;
     StatisticCalculatorClass StatisticCalculator;
 
-    public DialogAlgorithm(String js, Locale LocaleTheme, JSONRepository JSONRep, TreeMap<Long,String> USGApp) {
+    public DialogAlgorithm(Locale LocaleTheme, JSONRepository JSONRep, TreeMap<Long,String> USGApp) {
         initR();
         jsonFile = JSONRep.getJsonString();
         languageTheme = LocaleTheme;
