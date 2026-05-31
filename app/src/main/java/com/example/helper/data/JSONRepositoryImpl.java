@@ -1,12 +1,9 @@
 package com.example.helper.data;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Path;
 
-import com.example.helper.domain.repository.JSONRepository;
+import com.example.helper.repository.JSONRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,11 +16,11 @@ public class JSONRepositoryImpl implements JSONRepository {
     public String getJsonString() {
         String json = null;
         try {
-            InputStream is = context.getAssets().open("json_data");
-            int size = is.available();
+            InputStream inputStream = context.getAssets().open("json_data");
+            int size = inputStream.available();
             byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
+            inputStream.read(buffer);
+            inputStream.close();
             json = new String(buffer, "UTF-8");
             return json;
         } catch (IOException ex) {

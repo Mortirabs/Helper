@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.fragment.app.DialogFragment;
-import android.animation.AnimatorSet;
+
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
@@ -31,36 +31,27 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.helper.HelperAnimation;
 import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
 import com.example.helper.data.JSONRepositoryImpl;
 import com.example.helper.domain.DialogAlgorithm;
-import com.example.helper.domain.GetDayUsageStatsUseCase;
-import com.example.helper.domain.model.ListViewData;
+import com.example.helper.usecases.GetDayUsageStatsUseCase;
+import com.example.helper.model.ListViewData;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
-    private AnimatorSet mouth;
-    public int numberOfStartedAnim;
     private boolean sliderState = true;
-    public DialogAlgorithm dil;
     public TextView textView;
     public ImageButton menuButton;
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
@@ -71,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         headOfHelperS = findViewById(R.id.head_of_helper);
         bodyOfHelperS = findViewById(R.id.body_of_helper);
         eyesRight = findViewById(R.id.right_eye);
@@ -79,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
         TextView dayTextView = findViewById(R.id.day_usage);
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         Locale current = getResources().getConfiguration().getLocales().get(0);
@@ -136,20 +129,9 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
 
         if(getGrantStatus()) {
-
-//            Calendar cal = Calendar.getInstance();
-//            cal.add(Calendar.HOUR_OF_DAY, -11);
-//            Log.d("HOURS: ",cal.getTime().toString());
-//            Toast.makeText(this, cal.getTime().toString(),Toast.LENGTH_LONG).show();
-
-
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
             PackageManager packageManager = getApplicationContext().getPackageManager();
             GetDayUsageStatsUseCase UsageStatsCase = new GetDayUsageStatsUseCase(usm,packageManager);
-
-//            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,cal.getTimeInMillis(),System.currentTimeMillis() );
-//            appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
-
             for(UsageStats usageStats : UsageStatsCase.execute()) {
                 try {
                     usageApplication.put(usageStats.getTotalTimeInForeground(),(String)packageManager.getApplicationLabel(packageManager.getApplicationInfo(usageStats.getPackageName(),PackageManager.GET_META_DATA)));
@@ -164,13 +146,12 @@ public class MainActivity extends AppCompatActivity {
             }
             ListViewAdapter adapter = new ListViewAdapter(this,appNames);
             ls.setAdapter(adapter);
+            HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
+                    textView);
+            hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
-//        DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(jsonLoader(), current);
-//        HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
-//                textView);
-//        hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
     }
     public void menuFun() {
         DialogFragment m = new MenuFragment();
@@ -187,19 +168,4 @@ public class MainActivity extends AppCompatActivity {
             return (mode == MODE_ALLOWED);
         }
     }
-//    private String jsonLoader() {
-//        String json = null;
-//        try {
-//            InputStream is = getAssets().open("json_data");
-//            int size = is.available();
-//            byte[] buffer = new byte[size];
-//            is.read(buffer);
-//            is.close();
-//            json = new String(buffer, "UTF-8");
-//            return json;
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//            return null;
-//        }
-//    }
 }

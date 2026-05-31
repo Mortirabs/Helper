@@ -1,4 +1,4 @@
-package com.example.helper.domain.repository;
+package com.example.helper.repository;
 
 public interface JSONRepository {
     public String getJsonString();

@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.helper.domain.model.ListViewData;
+import com.example.helper.model.ListViewData;
 
 import java.util.ArrayList;
 

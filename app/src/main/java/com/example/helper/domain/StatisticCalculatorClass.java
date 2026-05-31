@@ -9,7 +9,11 @@ public class StatisticCalculatorClass {
         this.usageApps = usageApps;
     }
     public String mostUsageApplication() {
-        return Objects.requireNonNull(usageApps.firstEntry()).toString();
+        if (usageApps != null) {
+            return usageApps.firstEntry().getValue();
+        } else {
+            return "Nothing";
+        }
     }
     // setup weekend usage stats applications;
 }
