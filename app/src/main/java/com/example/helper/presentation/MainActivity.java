@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
+import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -27,6 +28,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,14 +39,24 @@ import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
 import com.example.helper.data.JSONRepositoryImpl;
 import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.model.DayUsageModel;
 import com.example.helper.usecases.GetDayUsageStatsUseCase;
 import com.example.helper.model.ListViewData;
+import com.example.helper.usecases.GetWeekUsageCallback;
+import com.example.helper.usecases.GetWeekUsageStatsUseCase;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,24 +64,33 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private boolean sliderState = true;
-    public TextView textView;
+    private boolean statisticState = false; // here need to be false
+    public TextView dialogTextView;
     public ImageButton menuButton;
+    public FrameLayout statisticView;
+    private final CompositeDisposable disposables = new CompositeDisposable();
     public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
 
+    private HashMap<Integer, DayUsageModel> weekUsageStatsHash;
 
+
+    @SuppressLint("CheckResult")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        statisticView = findViewById(R.id.statisticView);
         headOfHelperS = findViewById(R.id.head_of_helper);
         bodyOfHelperS = findViewById(R.id.body_of_helper);
         eyesRight = findViewById(R.id.right_eye);
         eyesLeft = findViewById(R.id.left_eye);
-        textView = findViewById(R.id.dialog_text_view);
+        dialogTextView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
+
+        TextView statisticTextView = findViewById(R.id.statistic);
         TextView dayTextView = findViewById(R.id.day_usage);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -119,6 +140,40 @@ public class MainActivity extends AppCompatActivity {
                 sliderState = true;
             }
         });
+//        statisticTextView.setOnClickListener(new View.OnClickListener() {
+//            ViewGroup.LayoutParams viewParams = statisticView.getLayoutParams();
+//            StatisticDraw statisticDrawClass = new StatisticDraw(getApplicationContext(),new GetWeekUsageStatsUseCase());
+//            @Override
+//            public void onClick(View view) {
+//                if (statisticState) {
+//                    ValueAnimator statisticCloseAnim = ValueAnimator.ofInt(viewParams.height,1);
+//                    statisticCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                        @Override
+//                        public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+//                            viewParams.height = (int) statisticCloseAnim.getAnimatedValue();
+//                            statisticView.setLayoutParams(viewParams);
+//                        }
+//                    });
+//                    statisticCloseAnim.start();
+//                    statisticState = false;
+//                } else {
+//                    ValueAnimator statisticOpenAnim = ValueAnimator.ofInt(1,600);
+//                    statisticOpenAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                        @Override
+//                        public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+//                            viewParams.height = (int) statisticOpenAnim.getAnimatedValue();
+//                            statisticView.setLayoutParams(viewParams);
+//                        }
+//                    });
+//                    statisticOpenAnim.start();
+//                    statisticState = true;
+//                    if(statisticView.getChildCount() == 0) {
+//                        statisticView.addView(statisticDrawClass);
+//                    }
+//                }
+//            }
+//        });
+
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +185,53 @@ public class MainActivity extends AppCompatActivity {
 
         if(getGrantStatus()) {
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+
             PackageManager packageManager = getApplicationContext().getPackageManager();
+            Disposable disbo = Single.fromCallable(new GetWeekUsageCallback(usm))
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            this::setStatisticView,
+                                            Throwable::printStackTrace
+                                    );
+            disposables.add(disbo);
+
+//            GetWeekUsageStatsUseCase uws = new GetWeekUsageStatsUseCase(usm);
+//            HashMap<Integer, DayUsageModel> s = uws.execute();
+            statisticTextView.setOnClickListener(new View.OnClickListener() {
+                ViewGroup.LayoutParams viewParams = statisticView.getLayoutParams();
+//                StatisticDraw statisticDrawClass = new StatisticDraw(getApplicationContext(),s);
+                @Override
+                public void onClick(View view) {
+                    if (statisticState) {
+                        ValueAnimator statisticCloseAnim = ValueAnimator.ofInt(viewParams.height,1);
+                        statisticCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                                viewParams.height = (int) statisticCloseAnim.getAnimatedValue();
+                                statisticView.setLayoutParams(viewParams);
+                            }
+                        });
+                        statisticCloseAnim.start();
+                        statisticState = false;
+                    } else {
+                        ValueAnimator statisticOpenAnim = ValueAnimator.ofInt(1,600);
+                        statisticOpenAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                            @Override
+                            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                                viewParams.height = (int) statisticOpenAnim.getAnimatedValue();
+                                statisticView.setLayoutParams(viewParams);
+                            }
+                        });
+                        statisticOpenAnim.start();
+                        statisticState = true;
+                        if(statisticView.getChildCount() == 0) {
+//                            statisticView.addView(statisticDrawClass);
+                        }
+                    }
+                }
+            });
+
             GetDayUsageStatsUseCase UsageStatsCase = new GetDayUsageStatsUseCase(usm,packageManager);
             for(UsageStats usageStats : UsageStatsCase.execute()) {
                 try {
@@ -147,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
             ListViewAdapter adapter = new ListViewAdapter(this,appNames);
             ls.setAdapter(adapter);
             HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
-                    textView);
+                    dialogTextView);
             hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
@@ -167,5 +268,18 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return (mode == MODE_ALLOWED);
         }
+    }
+    private void setStatisticView(HashMap<Integer,DayUsageModel> hash) {
+        if(statisticView.getChildCount() == 0){
+            Log.d("setView", "Completed");
+            StatisticDraw draw = new StatisticDraw(this, hash);
+            statisticView.addView(draw);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposables.dispose();
     }
 }

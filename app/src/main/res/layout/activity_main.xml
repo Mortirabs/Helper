@@ -8,12 +8,14 @@
     tools:context=".presentation.MainActivity">
 
     <ListView
-        android:divider="@null"
         android:id="@+id/list_usage_time"
         android:layout_width="wrap_content"
         android:layout_height="390dp"
         android:layout_marginStart="123dp"
+        android:layout_marginTop="8dp"
+        android:divider="@null"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.585"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/day_usage" />
 
@@ -77,18 +79,17 @@
 
     <TextView
         android:id="@+id/day_usage"
-        android:fontFamily="@font/josefin_sans_semi_bold"
+        style="@android:style/Theme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        style="@android:style/Theme"
         android:layout_marginStart="51dp"
+        android:fontFamily="@font/josefin_sans_semi_bold"
         android:text="@string/statistic_in_the_day"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.143"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statistic" />
+        app:layout_constraintTop_toBottomOf="@+id/statisticView" />
 
     <TextView
         android:id="@+id/dialog_text_view"
@@ -152,6 +153,15 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/menu" />
+
+    <FrameLayout
+        android:id="@+id/statisticView"
+        android:layout_width="900px"
+        android:layout_height="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statistic" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
