@@ -7,7 +7,7 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "com.example.helper"
-        minSdk 24
+        minSdk 26
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -27,6 +27,10 @@ android {
 
 
 dependencies {
+    implementation 'com.google.dagger:dagger:2.60.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.60.1'
+    implementation "io.reactivex.rxjava3:rxjava:3.1.10"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.2"
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.10.0'

@@ -1,4 +1,4 @@
-package com.example.helper;
+package com.example.helper.presentation;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,6 +33,8 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import com.example.helper.R;
 
 import java.util.Locale;
 import java.util.Objects;
