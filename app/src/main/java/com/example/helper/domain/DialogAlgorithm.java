@@ -2,13 +2,18 @@ package com.example.helper.domain;
 
 import android.util.Log;
 
+import com.example.helper.model.AppInfo;
 import com.example.helper.repository.JSONRepository;
 import com.example.helper.presentation.MainActivity;
+import com.example.helper.repository.LocalInfo;
+import com.example.helper.repository.UsageStatsRepository;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 
@@ -16,26 +21,26 @@ public class DialogAlgorithm {
 
     private final String jsonFile;
     private int categoryPlace;
-    private Locale languageTheme;
-    static int initializationTime;
-    TreeMap<Long,String> statisticTreeMap;
-
-    public DialogAlgorithm(Locale LocaleTheme, JSONRepository JSONRep, TreeMap<Long,String> USGApp) {
+    private String languageTheme;
+    static int tappedTime;
+    private List<AppInfo> appList;
+    public DialogAlgorithm(JSONRepository JSONRep,
+                           LocalInfo localInfo,
+                           UsageStatsRepository usageRep) {
         initR();
         jsonFile = JSONRep.getJsonString();
-        languageTheme = LocaleTheme;
+        languageTheme = localInfo.getLocale();
+        appList = usageRep.getDayUsageStats();
         setNickname();
-        statisticTreeMap = USGApp;
     }
     private static void initR() {
-        ++initializationTime;
+
     }
     public void setNickname() {
         try {
             JSONObject o = new JSONObject(jsonFile);
             if (MainActivity.usageApplication != null) {
-                StatisticCalculatorClass StatisticCalculator = new StatisticCalculatorClass(statisticTreeMap);
-                String mostUsageApplication = StatisticCalculator.mostUsageApplication();
+                String mostUsageApplication = mostUsageAppName();
                 int cIn=0;
                 boolean found = false;
                 for(; cIn < o.getJSONArray("applicationsCategory").length() && !found;cIn++) {
@@ -53,11 +58,19 @@ public class DialogAlgorithm {
             e.printStackTrace();
         }
     }
+    public String mostUsageAppName() {
+        appList.sort(Comparator.comparingLong(AppInfo::getMillisecondOfUsage));
+        if(appList.isEmpty()) {
+            return "hellnagh";
+        } else {
+            return appList.get(0).nameOfApp;
+        }
+    }
     public final String[] getWelcomeDialogText() {
         try {
             JSONObject ob = new JSONObject(jsonFile);
             JSONArray a;
-            if (languageTheme.getLanguage().equals("ru")) {
+            if (languageTheme.equals("ru")) {
                 a = ob.getJSONArray("welcomeCategoryRus");
             } else {
                 a = ob.getJSONArray("welcomeCategory");

@@ -37,10 +37,11 @@ import android.widget.TextView;
 import com.example.helper.HelperAnimation;
 import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
+import com.example.helper.app;
 import com.example.helper.data.JSONRepositoryImpl;
 import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.model.AppInfo;
 import com.example.helper.model.DayUsageModel;
-import com.example.helper.usecases.GetDayUsageStatsUseCase;
 import com.example.helper.model.ListViewData;
 import com.example.helper.usecases.GetWeekUsageCallback;
 import com.example.helper.usecases.GetWeekUsageStatsUseCase;
@@ -57,6 +58,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import jakarta.inject.Inject;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -73,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
     private HashMap<Integer, DayUsageModel> weekUsageStatsHash;
 
+    @Inject
+    MainActivityViewModel viewModel;
 
     @SuppressLint("CheckResult")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -80,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ((app)getApplicationContext()).appComponent.inject(this);
 
         statisticView = findViewById(R.id.statisticView);
         headOfHelperS = findViewById(R.id.head_of_helper);
@@ -187,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
             UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
 
             PackageManager packageManager = getApplicationContext().getPackageManager();
-            Disposable disbo = Single.fromCallable(new GetWeekUsageCallback(usm))
+            Disposable disbo = Single.fromCallable(viewModel.getWeekUsageCallback)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -232,24 +238,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            GetDayUsageStatsUseCase UsageStatsCase = new GetDayUsageStatsUseCase(usm,packageManager);
-            for(UsageStats usageStats : UsageStatsCase.execute()) {
-                try {
-                    usageApplication.put(usageStats.getTotalTimeInForeground(),(String)packageManager.getApplicationLabel(packageManager.getApplicationInfo(usageStats.getPackageName(),PackageManager.GET_META_DATA)));
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            DialogAlgorithm dialogAlgorithm = new DialogAlgorithm(current,
-                    new JSONRepositoryImpl(getApplicationContext()),usageApplication);
-            for (Map.Entry<Long, String> item : usageApplication.entrySet()) {
-                appNames.add(new ListViewData(item.getValue(), item.getKey()));
+            for (AppInfo appInfo : viewModel.getDayUsageUseCase.execute()) {
+                appNames.add(new ListViewData(appInfo.nameOfApp,appInfo.millisecondOfUsage));
             }
             ListViewAdapter adapter = new ListViewAdapter(this,appNames);
             ls.setAdapter(adapter);
             HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
                     dialogTextView);
-            hAnimation.speechAnimation(dialogAlgorithm.getWelcomeDialogText());
+            hAnimation.speechAnimation(viewModel.getWelcomeDialogUseCase.execute());
         } else {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }

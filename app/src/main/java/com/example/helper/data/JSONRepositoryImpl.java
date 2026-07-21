@@ -7,8 +7,11 @@ import com.example.helper.repository.JSONRepository;
 import java.io.IOException;
 import java.io.InputStream;
 
+import jakarta.inject.Inject;
+
 public class JSONRepositoryImpl implements JSONRepository {
     private Context context;
+    @Inject
     public JSONRepositoryImpl(Context context) {
         this.context = context;
     }
