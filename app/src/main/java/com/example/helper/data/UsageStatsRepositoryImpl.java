@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 
 public class UsageStatsRepositoryImpl implements UsageStatsRepository {
+    private Context context;
     private UsageStatsManager usm;
     private PackageManager pm;
     private List<AppInfo> listOfAppUsage = new ArrayList<AppInfo>();
@@ -33,9 +34,11 @@ public class UsageStatsRepositoryImpl implements UsageStatsRepository {
     }
     @Override
     public List<AppInfo> getDayUsageStats() {
-        if (listOfAppUsage != null) {
+        if (!listOfAppUsage.isEmpty()) {
+            Log.d("ListOfUsage","from the cache sent");
             return listOfAppUsage;
         } else {
+            Log.d("ListOfUsage","from the calculation sent");
         List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
                 LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 ZonedDateTime.now().toInstant().toEpochMilli());
