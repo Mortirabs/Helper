@@ -12,15 +12,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeMap;
+import java.util.Random;
+
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class DialogAlgorithm {
 
     private final String jsonFile;
+    public PublishSubject<String[]> publishSubject = PublishSubject.create();
     private int categoryPlace;
+    private JSONObject jsonObject;
     private String languageTheme;
     static int tappedTime;
     private List<AppInfo> appList;
@@ -31,6 +37,11 @@ public class DialogAlgorithm {
         jsonFile = JSONRep.getJsonString();
         languageTheme = localInfo.getLocale();
         appList = usageRep.getDayUsageStats();
+        try {
+            jsonObject = new JSONObject(jsonFile);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         setNickname();
     }
     private static void initR() {
@@ -39,17 +50,17 @@ public class DialogAlgorithm {
     public void setNickname() {
         try {
             JSONObject o = new JSONObject(jsonFile);
-            if (MainActivity.usageApplication != null) {
+            if (!appList.isEmpty()) {
                 String mostUsageApplication = mostUsageAppName();
                 int cIn=0;
                 boolean found = false;
-                for(; cIn < o.getJSONArray("applicationsCategory").length() && !found;cIn++) {
-                    JSONArray a = o.getJSONArray(o.getJSONArray("applicationsCategory").getString(cIn));
+                for(; cIn < jsonObject.getJSONArray("applicationsCategory").length() && !found;cIn++) {
+                    JSONArray a = jsonObject.getJSONArray(jsonObject.getJSONArray("applicationsCategory").getString(cIn));
                     for (int i = 0; i < a.length(); i++) {
                         if(mostUsageApplication.equals(a.getString(i))) {
                             found = true;
                             categoryPlace = cIn;
-                            Log.d("Most usage app: ", a.getString(i));
+                            Log.d("Most usage app:", a.getString(i));
                             break;}
                     }
             }
@@ -60,6 +71,7 @@ public class DialogAlgorithm {
     }
     public String mostUsageAppName() {
         appList.sort(Comparator.comparingLong(AppInfo::getMillisecondOfUsage));
+        Collections.reverse(appList);
         if(appList.isEmpty()) {
             return "hellnagh";
         } else {
@@ -71,15 +83,49 @@ public class DialogAlgorithm {
             JSONObject ob = new JSONObject(jsonFile);
             JSONArray a;
             if (languageTheme.equals("ru")) {
-                a = ob.getJSONArray("welcomeCategoryRus");
+                a = jsonObject.getJSONArray("welcomeCategoryRus");
             } else {
-                a = ob.getJSONArray("welcomeCategory");
+                a = jsonObject.getJSONArray("welcomeCategory");
             }
-            return ob.getString(a.getString(categoryPlace)).split(" ");
+            return jsonObject.getString(a.getString(categoryPlace)).split(" ");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return new String[]{"null"};
     }
-
+    public void onClickEvent() {
+        Schedulers.computation().scheduleDirect(() -> {
+            String[] angryString = angryAboutTouchDialog();
+            tappedTime = tappedTime + 1;
+            if(tappedTime <5) {
+                publishSubject.onNext(angryString);
+            } else {
+                publishSubject.onNext(crazyAboutTouchDialog());
+            }
+            Log.d("Thread check:", Thread.currentThread().getName());
+        });
+    }
+    public String[] angryAboutTouchDialog() {
+        Random random = new Random();
+        int angryDialogPlace = random.nextInt(6);
+        Log.d("angry random number:",angryDialogPlace + "");
+        Log.d("Thread check:", Thread.currentThread().getName());
+        try {
+            JSONObject ob = new JSONObject(jsonFile);
+            JSONArray a;
+            if (languageTheme.equals("ru")) {
+                a = jsonObject.getJSONArray("angryAboutTouchDialogRus");
+            } else {
+                a = jsonObject.getJSONArray("angryAboutTouchDialog");
+            }
+            return a.getString(angryDialogPlace).split(" ");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return new String[]{"dont", "touch","me"};
+    }
+    public String[] crazyAboutTouchDialog() {
+        String[] crazy = {"I", "SAID","THAT","DON'T","TOUCH","ME"};
+        return crazy;
+    }
 }

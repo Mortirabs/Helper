@@ -2,6 +2,7 @@ package com.example.helper.usecases;
 
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.util.Log;
 
 import com.example.helper.model.DayUsageModel;
 import com.example.helper.repository.UsageStatsRepository;
@@ -21,6 +22,7 @@ public class GetWeekUsageCallback implements Callable<HashMap<Integer, DayUsageM
     }
     @Override
     public HashMap<Integer, DayUsageModel> call() throws Exception {
+        Log.d("Thread check:", Thread.currentThread().getName());
         return weekUsageUseCase.execute();
     }
 }

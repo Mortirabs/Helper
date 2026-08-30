@@ -38,4 +38,43 @@ public class SharedPrefRepositoryImpl implements SharedPrefRepository {
     public void setLastVisitedTime(Integer lastTimeVisited) {
         sharedPrefStorage.setVisitTime(lastTimeVisited);
     }
+
+    @Override
+    public Boolean getUserSystemNightMode() {
+        return sharedPrefStorage.getSystemNightMode();
+    }
+
+    @Override
+    public void setSystemNightMode(boolean mode) {
+        sharedPrefStorage.setSystemNightMode(mode);
+    }
+
+    @Override
+    public void setAutoSystemNightMode(boolean mode) {
+        sharedPrefStorage.setNightAutoMode(mode);
+    }
+
+    @Override
+    public Boolean getAutoSystemNightMode() {
+        return sharedPrefStorage.getSystemAuto();
+    }
+
+    @Override
+    public Boolean getStatusOfTimeBasedNotification() {
+        return sharedPrefStorage.getTimeBasedNotificationStatus();
+    }
+
+    @Override
+    public void setStatusOfTimeBasedNotification(Boolean status) {
+        sharedPrefStorage.setTimeNotificationStatus(status);
+    }
+    @Override
+    public void setNotificationPermissionByUser(boolean permission) {
+        sharedPrefStorage.setNotificationPermissionByUser(permission);
+    }
+    @Override
+    public boolean getNotificationPermissionByUser() {
+        return sharedPrefStorage.getNotificationPermissionByUser();
+    }
+
 }

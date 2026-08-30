@@ -3,27 +3,31 @@ package com.example.helper.presentation;
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.AppOpsManager;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -38,20 +42,14 @@ import com.example.helper.HelperAnimation;
 import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
 import com.example.helper.app;
-import com.example.helper.data.JSONRepositoryImpl;
-import com.example.helper.domain.DialogAlgorithm;
 import com.example.helper.model.AppInfo;
 import com.example.helper.model.DayUsageModel;
 import com.example.helper.model.ListViewData;
-import com.example.helper.usecases.GetWeekUsageCallback;
-import com.example.helper.usecases.GetWeekUsageStatsUseCase;
+import com.example.helper.usecases.NotifyReceiver;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -61,7 +59,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.inject.Inject;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnTimeNotifyListener {
 
 
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
@@ -69,17 +67,20 @@ public class MainActivity extends AppCompatActivity {
     private boolean statisticState = false; // here need to be false
     public TextView dialogTextView;
     public ImageButton menuButton;
+    private final int NOTIFICATION_PERMISSION_CODE = 1;
+    private final int SCHEDULE_PERMISSION_CODE = 2;
     public FrameLayout statisticView;
+    private final MenuFragment menuFragment = new MenuFragment(this);
     private final CompositeDisposable disposables = new CompositeDisposable();
-    public static TreeMap<Long, String> usageApplication = new TreeMap<>(Comparator.reverseOrder());
-
-    private HashMap<Integer, DayUsageModel> weekUsageStatsHash;
+    private AlarmManager alarmManager;
+    private PendingIntent pendIntent;
 
     @Inject
     MainActivityViewModel viewModel;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("CheckResult")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,23 +97,25 @@ public class MainActivity extends AppCompatActivity {
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
 
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        headOfHelperS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewModel.dialogAlgo.onClickEvent();
+            }
+        });
+
         TextView statisticTextView = findViewById(R.id.statistic);
         TextView dayTextView = findViewById(R.id.day_usage);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Locale current = getResources().getConfiguration().getLocales().get(0);
-        Log.d("LOCALES:", current.getLanguage());
-
-
-        if(sharedPreferences.getBoolean("IS_SYSTEM",true)) {
+        if(viewModel.getSystemAutoNightModeUseCase.execute()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        } else if(sharedPreferences.getBoolean("IS_NIGHT", false)) {
+        } else if(viewModel.getUserChooseNightModeUseCase.execute()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-
 
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
@@ -146,41 +149,8 @@ public class MainActivity extends AppCompatActivity {
                 sliderState = true;
             }
         });
-//        statisticTextView.setOnClickListener(new View.OnClickListener() {
-//            ViewGroup.LayoutParams viewParams = statisticView.getLayoutParams();
-//            StatisticDraw statisticDrawClass = new StatisticDraw(getApplicationContext(),new GetWeekUsageStatsUseCase());
-//            @Override
-//            public void onClick(View view) {
-//                if (statisticState) {
-//                    ValueAnimator statisticCloseAnim = ValueAnimator.ofInt(viewParams.height,1);
-//                    statisticCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                        @Override
-//                        public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-//                            viewParams.height = (int) statisticCloseAnim.getAnimatedValue();
-//                            statisticView.setLayoutParams(viewParams);
-//                        }
-//                    });
-//                    statisticCloseAnim.start();
-//                    statisticState = false;
-//                } else {
-//                    ValueAnimator statisticOpenAnim = ValueAnimator.ofInt(1,600);
-//                    statisticOpenAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                        @Override
-//                        public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-//                            viewParams.height = (int) statisticOpenAnim.getAnimatedValue();
-//                            statisticView.setLayoutParams(viewParams);
-//                        }
-//                    });
-//                    statisticOpenAnim.start();
-//                    statisticState = true;
-//                    if(statisticView.getChildCount() == 0) {
-//                        statisticView.addView(statisticDrawClass);
-//                    }
-//                }
-//            }
-//        });
-
         menuButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onClick(View view) {
                 menuFun();
@@ -190,9 +160,25 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
 
         if(getGrantStatus()) {
-            UsageStatsManager usm = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+            HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
+                    dialogTextView);
 
-            PackageManager packageManager = getApplicationContext().getPackageManager();
+            Disposable welcomeDiscoDialog = (Disposable) Single.fromCallable(() -> viewModel.getWelcomeDialogUseCase.execute())
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> {hAnimation.speechAnimation(result);
+                        Log.d("Thread check:", Thread.currentThread().getName());},Throwable::printStackTrace);
+            Disposable discoInteraction = viewModel.dialogAlgo.publishSubject
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                    result -> {
+                        clearDialogText();
+                        hAnimation.mouth = new AnimatorSet();
+                        hAnimation.speechAnimation(result);
+                        Log.d("Thread check:", Thread.currentThread().getName());
+                    },
+                    Throwable::printStackTrace
+            );
             Disposable disbo = Single.fromCallable(viewModel.getWeekUsageCallback)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -200,13 +186,11 @@ public class MainActivity extends AppCompatActivity {
                             this::setStatisticView,
                                             Throwable::printStackTrace
                                     );
+            disposables.add(discoInteraction);
             disposables.add(disbo);
-
-//            GetWeekUsageStatsUseCase uws = new GetWeekUsageStatsUseCase(usm);
-//            HashMap<Integer, DayUsageModel> s = uws.execute();
+            disposables.add(welcomeDiscoDialog);
             statisticTextView.setOnClickListener(new View.OnClickListener() {
                 ViewGroup.LayoutParams viewParams = statisticView.getLayoutParams();
-//                StatisticDraw statisticDrawClass = new StatisticDraw(getApplicationContext(),s);
                 @Override
                 public void onClick(View view) {
                     if (statisticState) {
@@ -231,9 +215,6 @@ public class MainActivity extends AppCompatActivity {
                         });
                         statisticOpenAnim.start();
                         statisticState = true;
-                        if(statisticView.getChildCount() == 0) {
-//                            statisticView.addView(statisticDrawClass);
-                        }
                     }
                 }
             });
@@ -243,16 +224,29 @@ public class MainActivity extends AppCompatActivity {
             }
             ListViewAdapter adapter = new ListViewAdapter(this,appNames);
             ls.setAdapter(adapter);
-            HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
-                    dialogTextView);
-            hAnimation.speechAnimation(viewModel.getWelcomeDialogUseCase.execute());
         } else {
-            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+            Log.d("usage stats:" ,"not granted");
+            AlertDialog.Builder explainUsageDialog = new AlertDialog.Builder(this);
+            explainUsageDialog.setTitle("Usage stats Permission");
+            explainUsageDialog.setMessage("For statistic, and to show you your usage for the day, we need permission to your usage stats");
+            explainUsageDialog.setPositiveButton("allow", (dialogInterface, i) -> startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
+            explainUsageDialog.setNegativeButton("not allow", (dialogInterface, i) -> finishAffinity());
+            explainUsageDialog.setOnDismissListener(dialogInterface -> recreateActivity());
+            explainUsageDialog.create();
+            explainUsageDialog.show();
+        }
+        if(getNotificationPermission() && viewModel.getOnTimeNotificationStatusUseCase.execute()) {
+            setScheduleNotification();
         }
     }
+    public void recreateActivity() {
+        this.recreate();
+    }
     public void menuFun() {
-        DialogFragment m = new MenuFragment();
-        m.show(getSupportFragmentManager(), "Dialog");
+        menuFragment.show(getSupportFragmentManager(), "dialog");
+    }
+    public void clearDialogText() {
+        dialogTextView.setText(" ");
     }
     private boolean getGrantStatus() {
         AppOpsManager appOps = (AppOpsManager) getApplicationContext()
@@ -265,6 +259,16 @@ public class MainActivity extends AppCompatActivity {
             return (mode == MODE_ALLOWED);
         }
     }
+    @SuppressLint("ScheduleExactAlarm")
+    private void setScheduleNotification() {
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intentToPend = new Intent(this, NotifyReceiver.class);
+        pendIntent = PendingIntent.getBroadcast(this,0,intentToPend,PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        int delayTime = 120 * 60 * 1000;
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime() + delayTime,pendIntent);
+        Log.d("setting schedule notify","scheduled");
+        viewModel.setOnTimeNotificationStatusUseCase.execute(true);
+    }
     private void setStatisticView(HashMap<Integer,DayUsageModel> hash) {
         if(statisticView.getChildCount() == 0){
             Log.d("setView", "Completed");
@@ -272,10 +276,47 @@ public class MainActivity extends AppCompatActivity {
             statisticView.addView(draw);
         }
     }
+    private boolean getNotificationPermission() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if(this.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.SCHEDULE_EXACT_ALARM},100);
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == NOTIFICATION_PERMISSION_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            }
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         disposables.dispose();
+    }
+
+    @Override
+    public void cancelAllTimeBasedNotification() {
+        if(alarmManager != null) {
+            alarmManager.cancel(pendIntent);
+            viewModel.setOnTimeNotificationStatusUseCase.execute(false);
+        }
+    }
+
+    @Override
+    public void setUpAllTimeBasedNotification() {
+        if(getNotificationPermission()) {
+            setScheduleNotification();
+        }
     }
 }

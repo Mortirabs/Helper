@@ -14,6 +14,7 @@ import com.example.helper.repository.UsageStatsRepository;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,10 @@ public class GetDayUsageStatsUseCase {
         this.usageRep = usageRep;
     }
     public List<AppInfo> execute() {
-        usageRep.getDayUsageStats().sort(Comparator.comparingLong(AppInfo::getMillisecondOfUsage));
-        return usageRep.getDayUsageStats();
+        List<AppInfo> appInfoList = usageRep.getDayUsageStats();
+        appInfoList.sort(Comparator.comparingLong(AppInfo::getMillisecondOfUsage));
+        Collections.reverse(appInfoList);
+        return appInfoList;
 //        List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
 //                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
 //                ZonedDateTime.now().toInstant().toEpochMilli());

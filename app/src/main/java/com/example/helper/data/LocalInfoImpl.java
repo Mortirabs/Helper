@@ -14,6 +14,7 @@ public class LocalInfoImpl implements LocalInfo {
     @Override
     public String getLocale() {
         java.util.Locale current = context.getResources().getConfiguration().getLocales().get(0);
-        return current.getLanguage();
+
+        return Locale.getDefault().getLanguage();
     }
 }

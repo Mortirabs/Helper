@@ -6,6 +6,7 @@
     <string name="language">Language</string>
     <string name="dark_theme_string">Dark mode:  </string>
     <string name="creator_string">Creator</string>
+    <string name="allow_notification_string">Remind notification</string>
 
 
     <string name="interactive_data_shared_pref" translatable="false">INTERACTIVE_DATA</string>

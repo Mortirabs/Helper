@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,9 +55,10 @@ public class GetWeekUsageStatsUseCase {
 
             java.time.Instant instant = java.time.Instant.ofEpochMilli(endTimeMilli);
             java.time.DayOfWeek day = java.time.LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault()).getDayOfWeek();
-            String dayName = day.getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault());
+            String dayName = day.getDisplayName(TextStyle.SHORT, java.util.Locale.getDefault());
 
-            dayTimeMap.put(z,new DayUsageModel(((int) TimeUnit.MILLISECONDS.toHours(totalTimeInDay)),dayName.substring(0,3)));}
+            dayTimeMap.put(z,new DayUsageModel(((int) TimeUnit.MILLISECONDS.toHours(totalTimeInDay)),dayName));}
+            //dayTimeMap.put(z,new DayUsageModel(((int) TimeUnit.MILLISECONDS.toHours(totalTimeInDay)),dayName.substring(0,3)));}
 //        }for (int z=0,b=1 ; z <= 6; z++ ,b++) {
 //            // Total time for the day of week:
 //            long totalTimeInDay = 0L;

@@ -42,10 +42,40 @@
 "BizarreWelcomeDialog" : "Man/Woman if you have some problems in your life, you can have someone for help.",
 "BizarreWelcomeDialogRus" : "Мужчина или женщина, если у тебя есть проблемы в жизни, ты ",
 
-"games":["Pubg Mobile","Mobile Legend"],
+"games":["Pubg Mobile","Mobile Legend","Pixel launcher"],
 "socialNetwork":["YouTube","WeChat","TikTok"],
 "messageNetwork":["Whatsapp"],
 "developApplications":["Settings","Helper"],
 "artisticApplications":["Camera"],
-"oddApplications":["Chrome"]
+"oddApplications":["Chrome"],
+
+"angryAboutTouchDialog" : [
+"Don't touch me!",
+"I don't like when you touch me!",
+"Nooooooo, it is hurt",
+"here you go, again touching",
+"I am already red!",
+"F*ck you break"
+],
+"angryAboutTouchDialogRus" : [
+"Не трогай меня!",
+"Я не люблю когда ты меня трогаешь!",
+"Опять трогаешь, мне не приятно",
+"Мне твое мнение не интересно!",
+"Стоп! Мне не приятно!",
+"Я уже красный!!!!"
+],
+"crazyAboutTouchDialog":["I SAID DON'T TOUCH ME",
+"MY BROTHER RIGHT HERE, CAN BEAT YOU",
+"YOU ARE THE BADDEST PEOPLE IN THE WORLD",
+"F*CK OFF",
+"GO TO HELL",
+"NOOOOO, YOU ARE DIRTY"],
+"crazyAboutTouchDialogRus":[
+"Я СКАЗАЛ НЕ ТРОГАЙ МЕНЯ!",
+"МОЙ БРАТЬЯ УБЬЮТ ТЕБЯ",
+"ТЫ САМЫЙ УЖАСНЫЙ ЧЕЛОВЕКА",
+"ПОШЕЛ Н*Х*Й",
+"ВСТРЕТИМСЯ В АДУ",
+"НЕЕТ, ТЫ ГРЯЗНЫЙ"]
 }
