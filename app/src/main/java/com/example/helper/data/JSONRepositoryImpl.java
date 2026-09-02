@@ -20,7 +20,7 @@ public class JSONRepositoryImpl implements JSONRepository {
     @Override
     public String getJsonString() {
         try {
-            InputStream inputStream = context.getAssets().open("json_data");
+            InputStream inputStream = context.getAssets().open("application_data");
             int size = inputStream.available();
             byte[] buffer = new byte[size];
             int byteReaderInt = inputStream.read(buffer);

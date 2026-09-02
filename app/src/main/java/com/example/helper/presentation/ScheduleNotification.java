@@ -22,7 +22,7 @@ public class ScheduleNotification {
     }
     @SuppressLint("ScheduleExactAlarm")
     public void scheduleNotification() {
-        int delayTime = 1 * 60 * 1000;
+        int delayTime = 120 * 60 * 1000;
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delayTime,pendIntent);
         Log.d("setting schedule notify","scheduled");
     }

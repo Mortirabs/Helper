@@ -35,12 +35,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.helper.HelperAnimation;
-import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
 import com.example.helper.app;
 
 import com.example.helper.model.DayUsageModel;
+import com.example.helper.presentation.adapters.ListViewAdapter;
+import com.example.helper.presentation.animations.HelperAnimation;
+import com.example.helper.presentation.draws.StatisticDraw;
 
 import java.util.HashMap;
 

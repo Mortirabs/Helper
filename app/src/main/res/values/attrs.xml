@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="statistic_color" format="reference"/>
     <attr name="body_color" format="reference"/>
     <attr name="heads" format="reference"/>
     <attr name="eyes" format="reference"/>

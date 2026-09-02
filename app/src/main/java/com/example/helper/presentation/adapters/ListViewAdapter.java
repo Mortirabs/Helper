@@ -1,4 +1,4 @@
-package com.example.helper;
+package com.example.helper.presentation.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.helper.R;
 import com.example.helper.model.AppInfo;
 
 

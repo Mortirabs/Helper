@@ -1,15 +1,15 @@
-package com.example.helper.presentation;
+package com.example.helper.presentation.draws;
 
-import android.accessibilityservice.GestureDescription;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.hardware.camera2.CameraCaptureSession;
+import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.example.helper.R;
 import com.example.helper.model.DayUsageModel;
 
 import java.util.HashMap;
@@ -25,7 +25,12 @@ public class StatisticDraw extends View {
 
         drawPaint = new Paint();
 
-        drawPaint.setColor(Color.WHITE);
+        // Get need color for statistic draw:
+        Resources.Theme theme = context.getTheme();
+        TypedValue typedValue = new TypedValue();
+        theme.resolveAttribute(R.attr.statistic_color,typedValue,true);
+
+        drawPaint.setColor(typedValue.data);
         drawPaint.setTextSize(40);
         drawPaint.getFontSpacing();
         drawPaint.setStrokeWidth(12);
