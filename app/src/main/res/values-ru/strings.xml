@@ -6,5 +6,6 @@
     <string name="made_by">Сделал Чиня</string>
     <string name="language">Язык:</string>
     <string name="dark_theme_string">Темная тема:</string>
+    <string name="allow_notification_string">Уведомление</string>
     <string name="creator_string">Создатель</string>
 </resources>

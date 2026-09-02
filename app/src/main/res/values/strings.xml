@@ -6,4 +6,11 @@
     <string name="language">Language</string>
     <string name="dark_theme_string">Dark mode:  </string>
     <string name="creator_string">Creator</string>
+    <string name="allow_notification_string">Remind notification</string>
+
+
+    <string name="interactive_data_shared_pref" translatable="false">INTERACTIVE_DATA</string>
+    <string name="strike_file_key" translatable="false">STRIKE_DATA</string>
+    <string name="visited_time_file_key" translatable="false">VISITED_DATA</string>
+    <string name="clicked_time_file_key" translatable="false">CLICKED_TIME_DATA</string>
 </resources>

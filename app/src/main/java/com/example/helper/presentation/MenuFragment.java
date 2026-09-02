@@ -1,27 +1,18 @@
-package com.example.helper;
+package com.example.helper.presentation;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
-import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,17 +22,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
+
+import com.example.helper.R;
+import com.example.helper.app;
 
 import java.util.Locale;
 import java.util.Objects;
 
+import jakarta.inject.Inject;
+
 public class MenuFragment extends DialogFragment {
     private String appLocales;
-
-    public MenuFragment() {
-    }
+    @Inject
+    MenuFragmentViewModel viewModelMenuFragment;
 
     @Override
     public void onResume() {
@@ -56,6 +50,12 @@ public class MenuFragment extends DialogFragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -64,10 +64,16 @@ public class MenuFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        ((app)view.getContext().getApplicationContext()).appComponent.inject(this);
+
         SwitchCompat themeSwitch = view.findViewById(R.id.theme_switch);
+        SwitchCompat remindNotification = view.findViewById(R.id.notification_switch);
+
         Spinner languageSpinner = view.findViewById(R.id.spinner);
-        appLocales = getResources().getConfiguration().getLocales().get(0).getLanguage();
+
+
+        appLocales = Locale.getDefault().getLanguage();
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 view.getContext(),
                 R.array.menu_languages,
@@ -77,13 +83,25 @@ public class MenuFragment extends DialogFragment {
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                LocaleListCompat localList;
-                if (i == 0) {
-                    localList = LocaleListCompat.forLanguageTags("en");
-                    AppCompatDelegate.setApplicationLocales(localList);
-                } else {
-                    localList = LocaleListCompat.forLanguageTags("ru");
-                    AppCompatDelegate.setApplicationLocales(localList);
+                switch (i) {
+                    case 0:
+                        if(!appLocales.equals("en")) {
+                            Log.d("switch",viewModelMenuFragment.localInfo.getLocale());
+                            LocaleListCompat localList = LocaleListCompat.forLanguageTags("en");
+                            AppCompatDelegate.setApplicationLocales((localList));
+                            Locale.setDefault(new Locale("en"));
+                            break;
+                        }
+                        break;
+                    case 1:
+                        if(!appLocales.equals("ru")) {
+                            Log.d("switch",viewModelMenuFragment.localInfo.getLocale());
+                            LocaleListCompat localList = LocaleListCompat.forLanguageTags("ru");
+                            AppCompatDelegate.setApplicationLocales((localList));
+                            Locale.setDefault(new Locale("ru"));
+                            break;
+                        }
+                        break;
                 }
             }
 
@@ -99,23 +117,34 @@ public class MenuFragment extends DialogFragment {
         } else {
             languageSpinner.setSelection(0);
         }
+        remindNotification.setChecked(viewModelMenuFragment.getUserPermissionToNotificationUseCase.execute());
+        remindNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b) {
+                        viewModelMenuFragment.scheduleNotification.scheduleNotification();
+                    } else {
+                        viewModelMenuFragment.scheduleNotification.cancelScheduleNotification();
+                    }
+            }
+        });
+
         int nightModeFlags =
                 requireContext().getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            themeSwitch.setChecked(true);
-        }
-        themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (!b) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    sharedPreferences.edit().putBoolean("IS_SYSTEM", false).apply();
-                    sharedPreferences.edit().putBoolean("IS_NIGHT",false).apply();
-                } else {
+        themeSwitch.setChecked(nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+        themeSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(b) {
+                if(nightModeFlags != Configuration.UI_MODE_NIGHT_YES) {
+                    viewModelMenuFragment.setNightModeAutoUseCase.execute(false);
+                    viewModelMenuFragment.setNightModeUseCase.setNightMode(true);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    sharedPreferences.edit().putBoolean("IS_SYSTEM",false).apply();
-                    sharedPreferences.edit().putBoolean("IS_NIGHT",true).apply();
+                }
+            } else {
+                if(nightModeFlags != Configuration.UI_MODE_NIGHT_NO) {
+                    viewModelMenuFragment.setNightModeAutoUseCase.execute(false);
+                    viewModelMenuFragment.setNightModeUseCase.setNightMode(false);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
             }
         });
