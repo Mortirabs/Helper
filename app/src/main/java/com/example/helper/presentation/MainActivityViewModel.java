@@ -57,6 +57,5 @@ public class MainActivityViewModel extends ViewModel {
         this.getUserChooseNightModeUseCase = getUserChooseNightModeUseCase;
         this.getSystemAutoNightModeUseCase = getSystemAutoNightModeUseCase;
         this.localInfo = li;
-        Log.d("MainActivityViewModel","Created");
     }
 }

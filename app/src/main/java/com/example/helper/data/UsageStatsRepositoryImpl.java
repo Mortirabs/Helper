@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.example.helper.model.AppInfo;
-import com.example.helper.model.DayUsageModel;
 import com.example.helper.repository.UsageStatsRepository;
 
 import java.time.LocalDate;
@@ -16,17 +15,13 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+
 import java.util.stream.Collectors;
-
-import jakarta.inject.Inject;
-
 public class UsageStatsRepositoryImpl implements UsageStatsRepository {
     private Context context;
-    private UsageStatsManager usm;
-    private PackageManager pm;
-    private List<AppInfo> listOfAppUsage = new ArrayList<AppInfo>();
+    private final UsageStatsManager usm;
+    private final PackageManager pm;
+    private List<AppInfo> listOfAppUsage = new ArrayList<>();
     public UsageStatsRepositoryImpl(Context context) {
         this.context = context;
         usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
@@ -36,7 +31,6 @@ public class UsageStatsRepositoryImpl implements UsageStatsRepository {
     public List<AppInfo> getDayUsageStats() {
         if (!listOfAppUsage.isEmpty()) {
             Log.d("ListOfUsage","from the cache sent");
-            return listOfAppUsage;
         } else {
             Log.d("ListOfUsage","from the calculation sent");
         List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
@@ -51,8 +45,9 @@ public class UsageStatsRepositoryImpl implements UsageStatsRepository {
                 e.printStackTrace();
             }
         }
+        }
         return listOfAppUsage;
-    }}
+    }
 
     @Override
     public HashMap<Integer,List<UsageStats>>  getWeekUsageStats() {

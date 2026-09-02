@@ -11,9 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.helper.model.AppInfo;
-import com.example.helper.model.ListViewData;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class ListViewAdapter  extends ArrayAdapter<AppInfo> {

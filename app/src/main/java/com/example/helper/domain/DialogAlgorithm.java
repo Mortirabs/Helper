@@ -49,7 +49,6 @@ public class DialogAlgorithm {
     }
     public void setNickname() {
         try {
-            JSONObject o = new JSONObject(jsonFile);
             if (!appList.isEmpty()) {
                 String mostUsageApplication = mostUsageAppName();
                 int cIn=0;
@@ -80,7 +79,6 @@ public class DialogAlgorithm {
     }
     public final String[] getWelcomeDialogText() {
         try {
-            JSONObject ob = new JSONObject(jsonFile);
             JSONArray a;
             if (languageTheme.equals("ru")) {
                 a = jsonObject.getJSONArray("welcomeCategoryRus");
@@ -111,7 +109,6 @@ public class DialogAlgorithm {
         Log.d("angry random number:",angryDialogPlace + "");
         Log.d("Thread check:", Thread.currentThread().getName());
         try {
-            JSONObject ob = new JSONObject(jsonFile);
             JSONArray a;
             if (languageTheme.equals("ru")) {
                 a = jsonObject.getJSONArray("angryAboutTouchDialogRus");

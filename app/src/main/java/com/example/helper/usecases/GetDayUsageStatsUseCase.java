@@ -34,11 +34,6 @@ public class GetDayUsageStatsUseCase {
         appInfoList.sort(Comparator.comparingLong(AppInfo::getMillisecondOfUsage));
         Collections.reverse(appInfoList);
         return appInfoList;
-//        List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,
-//                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-//                ZonedDateTime.now().toInstant().toEpochMilli());
-//        appList = appList.stream().filter(app -> app.getTotalTimeInForeground() > 5000).collect(Collectors.toList());
-//        Log.d("Today Usage stats collection: ","Collection from today");
-//        return appList;
+
     }
 }

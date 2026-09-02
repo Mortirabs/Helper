@@ -15,10 +15,9 @@ import com.example.helper.R;
 import com.example.helper.data.JSONNotificationRepImpl;
 import com.example.helper.data.LocalInfoImpl;
 import com.example.helper.data.SharedPrefRepositoryImpl;
-import com.example.helper.data.storage.SharedProfStorageImpl;
+import com.example.helper.data.storage.SharedPrefStorageImpl;
 import com.example.helper.repository.JSONNotificationRepository;
 import com.example.helper.repository.LocalInfo;
-import com.example.helper.repository.SharedPrefRepository;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,8 +40,8 @@ public class NotifyReceiver extends BroadcastReceiver {
         Log.d("receiver","logged");
         PendingResult pendingResult = goAsync();
         JSONNotificationRepository notifyRep = new JSONNotificationRepImpl(context);
-        SetOnTimeNotificationStatus setOnTimeNotificationStatusUseCase = new SetOnTimeNotificationStatus(new SharedPrefRepositoryImpl(new SharedProfStorageImpl(context)));
-        LocalInfo localInfo = new LocalInfoImpl(context);
+        SetOnTimeNotificationStatus setOnTimeNotificationStatusUseCase = new SetOnTimeNotificationStatus(new SharedPrefRepositoryImpl(new SharedPrefStorageImpl(context)));
+        LocalInfo localInfo = new LocalInfoImpl();
         createNotificationChannel(context);
         Disposable disposableJson = (Disposable) Single.fromCallable(()->getNotificationText(notifyRep.getJsonString(),localInfo)
                 )

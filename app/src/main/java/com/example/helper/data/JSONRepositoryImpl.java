@@ -4,43 +4,37 @@ import android.content.Context;
 
 import com.example.helper.repository.JSONRepository;
 
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.inject.Inject;
 
 public class JSONRepositoryImpl implements JSONRepository {
-    private Context context;
+    private final Context context;
     @Inject
     public JSONRepositoryImpl(Context context) {
         this.context = context;
     }
     @Override
     public String getJsonString() {
-        String json = null;
         try {
             InputStream inputStream = context.getAssets().open("json_data");
             int size = inputStream.available();
             byte[] buffer = new byte[size];
-            inputStream.read(buffer);
+            int byteReaderInt = inputStream.read(buffer);
             inputStream.close();
-            json = new String(buffer, "UTF-8");
-            return json;
+            if(byteReaderInt != -1) {
+                return new String(buffer, StandardCharsets.UTF_8);
+            } else {
+                return "Problem";
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
-    @Override
-    public void includeNewApplication(String applicationCategory, String applicationName) {
 
-    }
-
-    @Override
-    public void deleteApplication(String applicationCategory, String applicationName) {
-
-    }
 }

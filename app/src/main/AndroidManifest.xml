@@ -23,9 +23,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Helper"
         tools:targetApi="31">
-        <activity
-            android:name=".presentation.OnTimeActivity"
-            android:exported="false" />
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

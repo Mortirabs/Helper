@@ -1,7 +1,6 @@
 package com.example.helper.presentation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -28,8 +27,6 @@ import android.widget.Toast;
 import com.example.helper.R;
 import com.example.helper.app;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -54,7 +51,6 @@ public class MenuFragment extends DialogFragment {
 
     @Override
     public void onAttach(@NonNull Context context) {
-        ((app)context.getApplicationContext()).appComponent.inject(this);
         super.onAttach(context);
 
     }
@@ -89,7 +85,6 @@ public class MenuFragment extends DialogFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 0:
-
                         if(!appLocales.equals("en")) {
                             Log.d("switch",viewModelMenuFragment.localInfo.getLocale());
                             LocaleListCompat localList = LocaleListCompat.forLanguageTags("en");
@@ -126,14 +121,11 @@ public class MenuFragment extends DialogFragment {
         remindNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                if (b != viewModelMenuFragment.getUserPermissionToNotificationUseCase.execute()) {
-//                    viewModelMenuFragment.setUserPermissionNotification.execute(b);
                     if(b) {
                         viewModelMenuFragment.scheduleNotification.scheduleNotification();
                     } else {
                         viewModelMenuFragment.scheduleNotification.cancelScheduleNotification();
                     }
-//                }
             }
         });
 

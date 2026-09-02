@@ -20,13 +20,11 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -41,12 +39,9 @@ import com.example.helper.HelperAnimation;
 import com.example.helper.ListViewAdapter;
 import com.example.helper.R;
 import com.example.helper.app;
-import com.example.helper.model.AppInfo;
-import com.example.helper.model.DayUsageModel;
-import com.example.helper.model.ListViewData;
-import com.example.helper.usecases.NotifyReceiver;
 
-import java.util.ArrayList;
+import com.example.helper.model.DayUsageModel;
+
 import java.util.HashMap;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -58,8 +53,6 @@ import jakarta.inject.Inject;
 
 
 public class MainActivity extends AppCompatActivity {
-
-
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private boolean sliderState = true;
     private boolean statisticState = false; // here need to be false
@@ -69,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private final MenuFragment menuFragment = new MenuFragment();
     private final CompositeDisposable disposables = new CompositeDisposable();
     private AlarmManager alarmManager;
-    private PendingIntent pendIntent;
 
     @Inject
     MainActivityViewModel viewModel;
@@ -92,66 +84,45 @@ public class MainActivity extends AppCompatActivity {
         dialogTextView = findViewById(R.id.dialog_text_view);
         ListView ls = findViewById(R.id.list_usage_time);
         menuButton = findViewById(R.id.menu_button);
-
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        headOfHelperS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewModel.dialogAlgo.onClickEvent();
-            }
-        });
-
         TextView statisticTextView = findViewById(R.id.statistic);
         TextView dayTextView = findViewById(R.id.day_usage);
 
-        if(viewModel.getSystemAutoNightModeUseCase.execute()) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        } else if(viewModel.getUserChooseNightModeUseCase.execute()) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        setApplicationNightMode();
+
+        headOfHelperS.setOnClickListener(view -> viewModel.dialogAlgo.onClickEvent());
 
         dayTextView.setOnClickListener(view -> {
             if (sliderState) {
                 ValueAnimator anim = ValueAnimator.ofInt(ls.getLayoutParams().height,1);
-                ObjectAnimator triangleRotation = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
-                anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-                        ViewGroup.LayoutParams params = ls.getLayoutParams();
-                        params.height = (int)valueAnimator.getAnimatedValue();
-                        ls.setLayoutParams(params);
-                    }
+                ObjectAnimator triangleRotationClosed = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",0f);
+                anim.addUpdateListener(valueAnimator -> {
+                    ViewGroup.LayoutParams params = ls.getLayoutParams();
+                    params.height = (int)valueAnimator.getAnimatedValue();
+                    ls.setLayoutParams(params);
                 });
                 anim.start();
-                triangleRotation.start();
+                triangleRotationClosed.start();
                 sliderState = false;
             } else {
-                ValueAnimator anims = ValueAnimator.ofInt(1,780);
-                ObjectAnimator triangleRotations = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
-
-                anims.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-                        ViewGroup.LayoutParams params = ls.getLayoutParams();
-                        params.height = (int)valueAnimator.getAnimatedValue();
-                        ls.setLayoutParams(params);
-                    }
+                ValueAnimator animClose = ValueAnimator.ofInt(1,780);
+                ObjectAnimator triangleRotationOpened = ObjectAnimator.ofFloat(findViewById(R.id.triangle_static_day), "rotation",180f);
+                animClose.addUpdateListener(valueAnimator -> {
+                    ViewGroup.LayoutParams params = ls.getLayoutParams();
+                    params.height = (int)valueAnimator.getAnimatedValue();
+                    ls.setLayoutParams(params);
                 });
-                triangleRotations.start();
-                anims.start();
+                triangleRotationOpened.start();
+                animClose.start();
                 sliderState = true;
             }
         });
         menuButton.setOnClickListener(view -> menuFun());
 
-
         if(getGrantStatus()) {
             HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
                     dialogTextView);
-
             Disposable welcomeDiscoDialog = (Disposable) Single.fromCallable(() -> viewModel.getWelcomeDialogUseCase.execute())
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -184,23 +155,17 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (statisticState) {
                         ValueAnimator statisticCloseAnim = ValueAnimator.ofInt(viewParams.height,1);
-                        statisticCloseAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-                                viewParams.height = (int) statisticCloseAnim.getAnimatedValue();
-                                statisticView.setLayoutParams(viewParams);
-                            }
+                        statisticCloseAnim.addUpdateListener(valueAnimator -> {
+                            viewParams.height = (int) statisticCloseAnim.getAnimatedValue();
+                            statisticView.setLayoutParams(viewParams);
                         });
                         statisticCloseAnim.start();
                         statisticState = false;
                     } else {
                         ValueAnimator statisticOpenAnim = ValueAnimator.ofInt(1,600);
-                        statisticOpenAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
-                                viewParams.height = (int) statisticOpenAnim.getAnimatedValue();
-                                statisticView.setLayoutParams(viewParams);
-                            }
+                        statisticOpenAnim.addUpdateListener(valueAnimator -> {
+                            viewParams.height = (int) statisticOpenAnim.getAnimatedValue();
+                            statisticView.setLayoutParams(viewParams);
                         });
                         statisticOpenAnim.start();
                         statisticState = true;
@@ -216,15 +181,11 @@ public class MainActivity extends AppCompatActivity {
             explainUsageDialog.setMessage("For statistic, and to show you your usage for the day, we need permission to your usage stats");
             explainUsageDialog.setPositiveButton("allow", (dialogInterface, i) -> startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
             explainUsageDialog.setNegativeButton("not allow", (dialogInterface, i) -> finishAffinity());
-            explainUsageDialog.setOnDismissListener(dialogInterface -> recreateActivity());
             explainUsageDialog.create();
             explainUsageDialog.show();
         }
         scheduleNotification();
 
-    }
-    public void recreateActivity() {
-        this.recreate();
     }
     public void menuFun() {
         menuFragment.show(getSupportFragmentManager(), "dialog");
@@ -246,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ScheduleExactAlarm")
     private void setScheduleNotification() {
         viewModel.scheduleNotification.scheduleNotification();
+        Log.d("Schedule","scheduled at mainActivity");
     }
     private void setStatisticView(HashMap<Integer,DayUsageModel> hash) {
         if(statisticView.getChildCount() == 0){
@@ -273,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
     }
 
     @Override
@@ -280,22 +243,23 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 100) {
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("AGREE","schedule");
                 startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
             }
         }
     }
 
+    public void setApplicationNightMode() {
+        if(viewModel.getSystemAutoNightModeUseCase.execute()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if(viewModel.getUserChooseNightModeUseCase.execute()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         disposables.dispose();
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
 }

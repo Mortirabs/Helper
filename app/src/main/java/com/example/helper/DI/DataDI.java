@@ -1,16 +1,13 @@
 package com.example.helper.DI;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.example.helper.data.JSONRepositoryImpl;
 import com.example.helper.data.LocalInfoImpl;
 import com.example.helper.data.SharedPrefRepositoryImpl;
 import com.example.helper.data.UsageStatsRepositoryImpl;
 import com.example.helper.data.storage.SharedPrefStorage;
-import com.example.helper.data.storage.SharedProfStorageImpl;
-import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.data.storage.SharedPrefStorageImpl;
 import com.example.helper.repository.JSONRepository;
 import com.example.helper.repository.LocalInfo;
 import com.example.helper.repository.SharedPrefRepository;
@@ -36,7 +33,7 @@ public class DataDI {
     @Singleton
     @Provides
     public SharedPrefStorage provideSharedPrefStorage(Context context) {
-        return new SharedProfStorageImpl(context);
+        return new SharedPrefStorageImpl(context);
     }
     @Singleton
     @Provides
@@ -45,7 +42,7 @@ public class DataDI {
     }
 
     @Provides
-    public LocalInfo provideLocalInfo(Context context) {
-        return new LocalInfoImpl(context);
+    public LocalInfo provideLocalInfo() {
+        return new LocalInfoImpl();
     }
 }
