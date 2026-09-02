@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.helper.app;
 import com.example.helper.presentation.MainActivity;
 import com.example.helper.presentation.MenuFragment;
+import com.example.helper.presentation.MenuFragmentViewModel;
 
 import java.lang.annotation.Retention;
 
@@ -19,4 +20,5 @@ import kotlin.annotation.AnnotationRetention;
 public interface ApplicationComponent {
     void inject(MainActivity mainActivity);
     void inject(MenuFragment menuFragment);
+
  }

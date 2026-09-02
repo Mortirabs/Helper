@@ -1,7 +1,10 @@
 
 package com.example.helper.DI;
 
+import android.content.Context;
+
 import com.example.helper.domain.DialogAlgorithm;
+import com.example.helper.presentation.ScheduleNotification;
 import com.example.helper.repository.JSONRepository;
 import com.example.helper.repository.LocalInfo;
 import com.example.helper.repository.SharedPrefRepository;
@@ -84,6 +87,9 @@ public class DomainDI {
     public SetOnTimeNotificationStatus provideSetOnTimeNotificationStatus(SharedPrefRepository sharedPrefRep) {
         return new SetOnTimeNotificationStatus(sharedPrefRep);
     }
-
+    @Provides
+    public ScheduleNotification provideScheduleNotification(Context context) {
+        return new ScheduleNotification(context);
+    }
 }
 

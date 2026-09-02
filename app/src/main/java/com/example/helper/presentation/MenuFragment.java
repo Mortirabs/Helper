@@ -37,13 +37,8 @@ import jakarta.inject.Inject;
 
 public class MenuFragment extends DialogFragment {
     private String appLocales;
-    private OnTimeNotifyListener onTimeListener;
     @Inject
     MenuFragmentViewModel viewModelMenuFragment;
-
-    public MenuFragment(OnTimeNotifyListener onTimeListener) {
-        this.onTimeListener = onTimeListener;
-    }
 
     @Override
     public void onResume() {
@@ -134,9 +129,9 @@ public class MenuFragment extends DialogFragment {
 //                if (b != viewModelMenuFragment.getUserPermissionToNotificationUseCase.execute()) {
 //                    viewModelMenuFragment.setUserPermissionNotification.execute(b);
                     if(b) {
-                        onTimeListener.setUpAllTimeBasedNotification();
+                        viewModelMenuFragment.scheduleNotification.scheduleNotification();
                     } else {
-                        onTimeListener.cancelAllTimeBasedNotification();
+                        viewModelMenuFragment.scheduleNotification.cancelScheduleNotification();
                     }
 //                }
             }

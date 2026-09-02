@@ -16,11 +16,13 @@ public class MenuFragmentViewModel extends ViewModel {
     public GetSystemAutoNightMode getSystemAutoNightModeUseCase;
     public SetNightModeAutoUseCase setNightModeAutoUseCase;
     public setNightModeUseCase setNightModeUseCase;
+    public ScheduleNotification scheduleNotification;
     public getUserPermissionToNotification getUserPermissionToNotificationUseCase;
     public SetUserPermissionNotification setUserPermissionNotification;
     public LocalInfo localInfo;
     @Inject
     public MenuFragmentViewModel(
+            ScheduleNotification scheduleNotification,
             GetUserChooseNightMode getUserChooseNightMode,
             GetSystemAutoNightMode getSystemAutoNightMode,
             SetNightModeAutoUseCase setNightModeAutoUseCase,
@@ -30,6 +32,7 @@ public class MenuFragmentViewModel extends ViewModel {
             LocalInfo localInfo
     ) {
         this.getUserChooseNightModeUseCase = getUserChooseNightMode;
+        this.scheduleNotification = scheduleNotification;
         this.getSystemAutoNightModeUseCase = getSystemAutoNightMode;
         this.getUserPermissionToNotificationUseCase = getUserPermissionNotify;
         this.setNightModeAutoUseCase = setNightModeAutoUseCase;

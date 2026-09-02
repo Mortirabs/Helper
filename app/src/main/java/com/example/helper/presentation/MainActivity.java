@@ -3,14 +3,13 @@ package com.example.helper.presentation;
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.OPSTR_GET_USAGE_STATS;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.animation.AnimatorSet;
@@ -49,7 +48,6 @@ import com.example.helper.usecases.NotifyReceiver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -59,7 +57,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import jakarta.inject.Inject;
 
 
-public class MainActivity extends AppCompatActivity implements OnTimeNotifyListener {
+public class MainActivity extends AppCompatActivity {
 
 
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
@@ -67,10 +65,8 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
     private boolean statisticState = false; // here need to be false
     public TextView dialogTextView;
     public ImageButton menuButton;
-    private final int NOTIFICATION_PERMISSION_CODE = 1;
-    private final int SCHEDULE_PERMISSION_CODE = 2;
     public FrameLayout statisticView;
-    private final MenuFragment menuFragment = new MenuFragment(this);
+    private final MenuFragment menuFragment = new MenuFragment();
     private final CompositeDisposable disposables = new CompositeDisposable();
     private AlarmManager alarmManager;
     private PendingIntent pendIntent;
@@ -149,15 +145,8 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
                 sliderState = true;
             }
         });
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onClick(View view) {
-                menuFun();
-            }
-        });
+        menuButton.setOnClickListener(view -> menuFun());
 
-        ArrayList<ListViewData> appNames = new ArrayList<ListViewData>();
 
         if(getGrantStatus()) {
             HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
@@ -218,11 +207,7 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
                     }
                 }
             });
-
-            for (AppInfo appInfo : viewModel.getDayUsageUseCase.execute()) {
-                appNames.add(new ListViewData(appInfo.nameOfApp,appInfo.millisecondOfUsage));
-            }
-            ListViewAdapter adapter = new ListViewAdapter(this,appNames);
+            ListViewAdapter adapter = new ListViewAdapter(this,viewModel.getDayUsageUseCase.execute());
             ls.setAdapter(adapter);
         } else {
             Log.d("usage stats:" ,"not granted");
@@ -235,9 +220,8 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
             explainUsageDialog.create();
             explainUsageDialog.show();
         }
-        if(getNotificationPermission() && viewModel.getOnTimeNotificationStatusUseCase.execute()) {
-            setScheduleNotification();
-        }
+        scheduleNotification();
+
     }
     public void recreateActivity() {
         this.recreate();
@@ -261,13 +245,7 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
     }
     @SuppressLint("ScheduleExactAlarm")
     private void setScheduleNotification() {
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intentToPend = new Intent(this, NotifyReceiver.class);
-        pendIntent = PendingIntent.getBroadcast(this,0,intentToPend,PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        int delayTime = 120 * 60 * 1000;
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,SystemClock.elapsedRealtime() + delayTime,pendIntent);
-        Log.d("setting schedule notify","scheduled");
-        viewModel.setOnTimeNotificationStatusUseCase.execute(true);
+        viewModel.scheduleNotification.scheduleNotification();
     }
     private void setStatisticView(HashMap<Integer,DayUsageModel> hash) {
         if(statisticView.getChildCount() == 0){
@@ -276,25 +254,34 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
             statisticView.addView(draw);
         }
     }
-    private boolean getNotificationPermission() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if(this.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                return true;
+    public void scheduleNotification() {
+        if(viewModel.getUserPermissionToNotification.execute()
+                &&
+                !viewModel.getOnTimeNotificationStatusUseCase.execute()) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if(ContextCompat.checkSelfPermission(this,Manifest.permission.POST_NOTIFICATIONS)
+                        ==
+                        PackageManager.PERMISSION_GRANTED && alarmManager.canScheduleExactAlarms())
+                {
+                    setScheduleNotification();
+                } else
+                {
+                    ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.POST_NOTIFICATIONS},100);
+                }
             } else {
-                ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.SCHEDULE_EXACT_ALARM},100);
-                return false;
+                setScheduleNotification();
             }
-        } else {
-            return true;
         }
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == NOTIFICATION_PERMISSION_CODE) {
+        if(requestCode == 100) {
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                Log.d("AGREE","schedule");
+                startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
             }
         }
     }
@@ -306,17 +293,9 @@ public class MainActivity extends AppCompatActivity implements OnTimeNotifyListe
     }
 
     @Override
-    public void cancelAllTimeBasedNotification() {
-        if(alarmManager != null) {
-            alarmManager.cancel(pendIntent);
-            viewModel.setOnTimeNotificationStatusUseCase.execute(false);
-        }
+    protected void onResume() {
+        super.onResume();
+
     }
 
-    @Override
-    public void setUpAllTimeBasedNotification() {
-        if(getNotificationPermission()) {
-            setScheduleNotification();
-        }
-    }
 }

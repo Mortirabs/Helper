@@ -10,29 +10,28 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.helper.model.AppInfo;
 import com.example.helper.model.ListViewData;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ListViewAdapter  extends ArrayAdapter<ListViewData> {
-    public ListViewAdapter(@NonNull Context context, ArrayList<ListViewData> arrayList) {
+public class ListViewAdapter  extends ArrayAdapter<AppInfo> {
+    public ListViewAdapter(@NonNull Context context, List<AppInfo> arrayList) {
         super(context,0,arrayList);
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View currentItemView = convertView;
-        if (currentItemView == null) {
-            currentItemView = LayoutInflater.from(getContext()).inflate(R.layout.custom_list_view_layout, parent, false);
-
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.custom_list_view_layout, parent, false);
         }
-        ListViewData currentViewItemPosition = getItem(position);
-        TextView textView = null;
-        if (currentItemView != null) {
-            textView = currentItemView.findViewById(R.id.text_list);
-            textView.setText(currentViewItemPosition.getApplicationNameList() + " : " + currentViewItemPosition.getUsageTimeString());
+        AppInfo currentViewItemPosition = getItem(position);
+        if (convertView != null) {
+            TextView textView = convertView.findViewById(R.id.text_list);
+            textView.setText(currentViewItemPosition.getApplicationName() + " : " + currentViewItemPosition.getApplicationUsageTime());
         }
-        return currentItemView;
+        return convertView;
     }
 }
 

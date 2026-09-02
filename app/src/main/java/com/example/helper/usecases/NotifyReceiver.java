@@ -14,8 +14,11 @@ import androidx.core.app.NotificationManagerCompat;
 import com.example.helper.R;
 import com.example.helper.data.JSONNotificationRepImpl;
 import com.example.helper.data.LocalInfoImpl;
+import com.example.helper.data.SharedPrefRepositoryImpl;
+import com.example.helper.data.storage.SharedProfStorageImpl;
 import com.example.helper.repository.JSONNotificationRepository;
 import com.example.helper.repository.LocalInfo;
+import com.example.helper.repository.SharedPrefRepository;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +41,7 @@ public class NotifyReceiver extends BroadcastReceiver {
         Log.d("receiver","logged");
         PendingResult pendingResult = goAsync();
         JSONNotificationRepository notifyRep = new JSONNotificationRepImpl(context);
+        SetOnTimeNotificationStatus setOnTimeNotificationStatusUseCase = new SetOnTimeNotificationStatus(new SharedPrefRepositoryImpl(new SharedProfStorageImpl(context)));
         LocalInfo localInfo = new LocalInfoImpl(context);
         createNotificationChannel(context);
         Disposable disposableJson = (Disposable) Single.fromCallable(()->getNotificationText(notifyRep.getJsonString(),localInfo)
@@ -59,6 +63,7 @@ public class NotifyReceiver extends BroadcastReceiver {
                             Log.d("notify","not work");
                             }
                         );
+        setOnTimeNotificationStatusUseCase.execute(false);
         disposables.add(disposableJson);
     }
     public void createNotificationChannel(Context context) {

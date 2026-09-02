@@ -31,6 +31,7 @@ public class MainActivityViewModel extends ViewModel {
     public GetOnTimeNotificationStatus getOnTimeNotificationStatusUseCase;
     public SetOnTimeNotificationStatus setOnTimeNotificationStatusUseCase;
     public DialogAlgorithm dialogAlgo;
+    public ScheduleNotification scheduleNotification;
     public LocalInfo localInfo;
     @Inject
     public MainActivityViewModel(GetDayUsageStatsUseCase getDayUsageUseCase,
@@ -41,12 +42,14 @@ public class MainActivityViewModel extends ViewModel {
                                  GetUserChooseNightMode getUserChooseNightModeUseCase,
                                  GetOnTimeNotificationStatus getOnTimeNotificationStatus,
                                  SetOnTimeNotificationStatus setOnTimeNotificationStatusUseCase,
+                                 ScheduleNotification scheduleNotification,
                                  LocalInfo li,
                                  getUserPermissionToNotification getUserNotify
                                  ) {
         this.dialogAlgo = dialogAlgo;
         this.getDayUsageUseCase= getDayUsageUseCase;
         this.getOnTimeNotificationStatusUseCase = getOnTimeNotificationStatus;
+        this.scheduleNotification = scheduleNotification;
         this.setOnTimeNotificationStatusUseCase = setOnTimeNotificationStatusUseCase;
         this.getWelcomeDialogUseCase = getWelcomeDialogUseCase;
         this.getWeekUsageCallback = getWeekUsageCallback;
