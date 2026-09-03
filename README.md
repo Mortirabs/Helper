@@ -6,19 +6,19 @@ Say something about your usage time.
 
 🛠 Tech Stack
 Java
-MVVM — application architecture
-Clean Architecture — separation of presentation, domain, and data layers
-Dagger — Dependency Injection
-UsageStatsManager — collecting application usage statistics
-Notification — user notifications
-AlarmManager — scheduling background events
+MVVM - application architecture
+Clean Architecture - separation of presentation, domain, and data layers
+Dagger - Dependency Injection
+UsageStatsManager - collecting application usage statistics
+Notification - user notifications
+AlarmManager - scheduling background events
 🏗 Architecture
 
 The project follows Clean Architecture + MVVM principles:
 
-Presentation — UI and ViewModels
-Domain — business logic and use cases
-Data — data sources and repositories
+Presentation - UI and ViewModels
+Domain - business logic and use cases
+Data - data sources and repositories
 Dependency injection is implemented using Dagger.
 
 ✨ Features
