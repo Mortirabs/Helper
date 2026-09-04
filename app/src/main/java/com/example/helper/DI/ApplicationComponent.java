@@ -15,7 +15,7 @@ import dagger.Component;
 import dagger.Provides;
 import kotlin.annotation.AnnotationRetention;
 
-@Component(modules = {AppModule.class,DataDI.class,DomainDI.class})
+@Component(modules = {AppModule.class,DataDI.class,DomainDI.class,ViewModelModule.class})
 @Singleton
 public interface ApplicationComponent {
     void inject(MainActivity mainActivity);
