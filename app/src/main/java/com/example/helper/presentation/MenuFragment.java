@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import jakarta.inject.Inject;
 public class MenuFragment extends DialogFragment {
     private String appLocales;
     @Inject
+    ViewModelProvider.Factory viewModelFactory;
     MenuFragmentViewModel viewModelMenuFragment;
 
     @Override
@@ -66,6 +68,7 @@ public class MenuFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         ((app)view.getContext().getApplicationContext()).appComponent.inject(this);
+        viewModelMenuFragment = new ViewModelProvider(this,viewModelFactory).get(MenuFragmentViewModel.class);
 
         SwitchCompat themeSwitch = view.findViewById(R.id.theme_switch);
         SwitchCompat remindNotification = view.findViewById(R.id.notification_switch);

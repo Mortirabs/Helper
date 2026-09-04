@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.animation.AnimatorSet;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.helper.DI.ViewModelFactory;
 import com.example.helper.R;
 import com.example.helper.app;
 
@@ -54,6 +56,9 @@ import jakarta.inject.Inject;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private boolean sliderState = true;
     private boolean statisticState = false; // here need to be false
@@ -64,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private final CompositeDisposable disposables = new CompositeDisposable();
     private AlarmManager alarmManager;
 
-    @Inject
+
     MainActivityViewModel viewModel;
 
 
@@ -76,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ((app)getApplicationContext()).appComponent.inject(this);
+        viewModel = new ViewModelProvider(this,viewModelFactory).get(MainActivityViewModel.class);
 
         statisticView = findViewById(R.id.statisticView);
         headOfHelperS = findViewById(R.id.head_of_helper);
@@ -140,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     },
                     Throwable::printStackTrace
             );
+
             Disposable disbo = Single.fromCallable(viewModel.getWeekUsageCallback)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
