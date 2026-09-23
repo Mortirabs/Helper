@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
 
 import android.Manifest;
 import android.animation.AnimatorSet;
@@ -40,12 +42,14 @@ import com.example.helper.DI.ViewModelFactory;
 import com.example.helper.R;
 import com.example.helper.app;
 
+import com.example.helper.model.AppInfo;
 import com.example.helper.model.DayUsageModel;
 import com.example.helper.presentation.adapters.ListViewAdapter;
 import com.example.helper.presentation.animations.HelperAnimation;
 import com.example.helper.presentation.draws.StatisticDraw;
 
 import java.util.HashMap;
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -58,7 +62,7 @@ import jakarta.inject.Inject;
 public class MainActivity extends AppCompatActivity {
 
     @Inject
-    ViewModelProvider.Factory viewModelFactory;
+    public ViewModelProvider.Factory viewModelFactory;
     private ImageView headOfHelperS, bodyOfHelperS, eyesRight, eyesLeft;
     private boolean sliderState = true;
     private boolean statisticState = false; // here need to be false
@@ -66,11 +70,11 @@ public class MainActivity extends AppCompatActivity {
     public ImageButton menuButton;
     public FrameLayout statisticView;
     private final MenuFragment menuFragment = new MenuFragment();
-    private final CompositeDisposable disposables = new CompositeDisposable();
+
     private AlarmManager alarmManager;
 
 
-    MainActivityViewModel viewModel;
+    public MainActivityViewModel viewModel;
 
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("MainActivity","Created");
         setContentView(R.layout.activity_main);
 
         ((app)getApplicationContext()).appComponent.inject(this);
@@ -130,33 +135,12 @@ public class MainActivity extends AppCompatActivity {
         if(getGrantStatus()) {
             HelperAnimation hAnimation = new HelperAnimation(headOfHelperS,bodyOfHelperS,eyesLeft,eyesRight,
                     dialogTextView);
-            Disposable welcomeDiscoDialog = (Disposable) Single.fromCallable(() -> viewModel.getWelcomeDialogUseCase.execute())
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(result -> {hAnimation.speechAnimation(result);
-                        Log.d("Thread check:", Thread.currentThread().getName());},Throwable::printStackTrace);
-            Disposable discoInteraction = viewModel.dialogAlgo.publishSubject
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                    result -> {
-                        clearDialogText();
-                        hAnimation.mouth = new AnimatorSet();
-                        hAnimation.speechAnimation(result);
-                        Log.d("Thread check:", Thread.currentThread().getName());
-                    },
-                    Throwable::printStackTrace
-            );
-
-            Disposable disbo = Single.fromCallable(viewModel.getWeekUsageCallback)
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            this::setStatisticView,
-                                            Throwable::printStackTrace
-                                    );
-            disposables.add(discoInteraction);
-            disposables.add(disbo);
-            disposables.add(welcomeDiscoDialog);
+            viewModel.getHelperSpeech().observe(this, hAnimation::speechAnimation);
+            viewModel.getDayAppUsage().observe(this, appInfos -> {
+                ListViewAdapter adapter = new ListViewAdapter(this,appInfos);
+                ls.setAdapter(adapter);
+            });
+            viewModel.getWeekUsageStats().observe(this, this::setStatisticView);
             statisticTextView.setOnClickListener(new View.OnClickListener() {
                 ViewGroup.LayoutParams viewParams = statisticView.getLayoutParams();
                 @Override
@@ -180,8 +164,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            ListViewAdapter adapter = new ListViewAdapter(this,viewModel.getDayUsageUseCase.execute());
-            ls.setAdapter(adapter);
         } else {
             Log.d("usage stats:" ,"not granted");
             AlertDialog.Builder explainUsageDialog = new AlertDialog.Builder(this);
@@ -268,6 +250,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disposables.dispose();
+        Log.d("MainActivity", "destroyed");
     }
 }
