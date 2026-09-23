@@ -1,4 +1,12 @@
 <h1>📱 Helper</h1>
+<div>
+  <img src="screenshots/helper animation speech white.png" width="250" height="600"/>
+  <img src="screenshots/helper animation speech.png" width="250" height="600"/>
+  <img src="screenshots/helper menu white.png" width="250" height="600"/>
+  <img src="screenshots/helper menu.png" width="250" height="600"/>
+  <img src="screenshots/helper week usage.png" width="250" height="600"/>
+  
+</div>
 
 <div>Android application for monitoring and analyzing device usage statistics.
 The application collects information about app usage and helps users track their screen time. 
